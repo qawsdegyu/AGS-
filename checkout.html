@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إتمام الطلب - AGS Technology | شركة الدقة للسلامة العامة</title>
+  <meta name="description" content="إتمام طلبك من شركة الدقة للسلامة العامة (AGS) وشركة المنار لأجهزة الإطفاء والإنذار بشكل آمن وسريع." />
+  <meta name="keywords" content="معدات سلامة, أجهزة قياس, أجهزة فحص, إنذار حريق, طفايات حريق, كاميرات مراقبة, الدفع, AGS Technology" />
+  <meta name="author" content="Eng. Osama Mossa Al-Salhout" />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="إتمام الطلب | AGS Technology - شركة الدقة للسلامة العامة" />
+  <meta property="og:description" content="قم بإنهاء طلبك بأمان وسرعة." />
+  <meta property="og:image" content="https://www.ags-safety.com/assets/images/logo.png?v=5" />
+  <meta property="og:url" content="https://www.ags-safety.com/checkout.html" />
+  <meta property="og:site_name" content="شركة الدقة للسلامة العامة - AGS Technology" />
+  <link rel="icon" type="image/png" href="favicon.png?v=4" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F8FAFC;
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      color: #1E293B;
+    }
+
+    /* ─── Header ─── */
+    .co-header {
+      background: #fff;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .co-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #1565C0;
+    }
+
+    .co-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #718096;
+    }
+
+    .co-step-active {
+      color: #0F2C59;
+      font-weight: 700;
+    }
+
+    .co-secure {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #0F2C59;
+    }
+
+    .co-secure svg {
+      color: #0F2C59;
+    }
+
+    /* ─── Main Grid ─── */
+    .co-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ─── Cards ─── */
+    .co-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #E2E8F0;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .co-card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #0F2C59;
+      margin: 0 0 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .co-card-title svg {
+      color: #0F2C59;
+    }
+
+    /* ─── Form ─── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0F2C59;
+      margin-bottom: 6px;
+    }
+
+    .form-group label .req {
+      color: #FF6B00;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 14px;
+      background: #F8F9FA;
+      color: #1E293B;
+      transition: all 0.2s;
+    }
+
+    .form-control::placeholder {
+      color: #A0AEC0;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #0F2C59;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(15, 44, 89, 0.1);
+    }
+
+    .form-control:read-only {
+      background: #F1F5F9;
+      cursor: not-allowed;
+      color: #94A3B8;
+    }
+
+    /* ─── Payment Options ─── */
+    .pay-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      user-select: none;
+      background: #FFFFFF;
+    }
+
+    .pay-option:hover {
+      border-color: #93C5FD;
+      background: #F0F9FF;
+    }
+
+    .pay-option.active {
+      border-color: #0F2C59;
+      border-width: 2px;
+      background: #EFF6FF;
+      box-shadow: 0 0 0 3px rgba(15, 44, 89, 0.1);
+      padding: calc(1rem - 1px);
+    }
+
+    .pay-option input[type="radio"] {
+      width: 22px;
+      height: 22px;
+      accent-color: #0F2C59;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .pay-info {
+      flex: 1;
+    }
+
+    .pay-info strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0F2C59;
+      margin-bottom: 2px;
+    }
+
+    .pay-info small {
+      font-size: 12px;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pay-badges {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .btn-copy {
+      background: #F1F5F9;
+      color: #0F2C59;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      background: #E6F0FA;
+      color: #0F2C59;
+    }
+
+    .upload-area {
+      border: 2px dashed #CBD5E1;
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+      background: #F8FAFC;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-area:hover {
+      border-color: #93C5FD;
+      background: #EFF6FF;
+    }
+
+    /* ─── Trust Signals ─── */
+    .trust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 10px 1rem;
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #166534;
+      font-weight: 700;
+      margin-top: 1rem;
+    }
+
+    .trust-bar span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ─── Submit Button ─── */
+    .btn-place-order {
+      width: 100%;
+      padding: 1rem;
+      background: #FF6B00;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1.25rem;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3);
+    }
+
+    .btn-place-order:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+    }
+
+    .btn-place-order:disabled {
+      background: #E2E8F0;
+      color: #94A3B8;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* ─── Summary Sidebar ─── */
+    .co-summary {
+      position: sticky;
+      top: 80px;
+    }
+
+    .summary-items {
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+
+    .s-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .s-item:last-child {
+      border-bottom: none;
+    }
+
+    .s-item-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .s-item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .s-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .s-item-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0F2C59;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .s-item-qty {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+
+    .s-item-price {
+      font-weight: 800;
+      font-size: 14px;
+      color: #0F2C59;
+      flex-shrink: 0;
+    }
+
+    .divider {
+      border: none;
+      border-top: 2px dashed #E2E8F0;
+      margin: 1rem 0;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #64748B;
+      font-weight: 600;
+    }
+
+    .total-row.grand {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0F2C59;
+      margin-bottom: 0;
+    }
+
+    .total-row .val {
+      color: #0F2C59;
+    }
+
+    .co-summary .co-card {
+      background: #F8F9FA;
+    }
+
+    /* ─── Loading Skeleton ─── */
+    @keyframes shimmer {
+      0% {
+        background-position: -400px 0
+      }
+
+      100% {
+        background-position: 400px 0
+      }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+      border-radius: 6px;
+    }
+
+    /* ─── Success Screen ─── */
+    .success-wrap {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #E2E8F0;
+    }
+
+    /* ─── Responsive ─── */
+    @media(max-width:900px) {
+      .co-container {
+        grid-template-columns: 1fr;
+      }
+
+      .co-summary {
+        position: static;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .co-steps, .co-secure {
+        display: none !important;
+      }
+      .co-header {
+        padding: 1rem;
+      }
+    }
+
+    /* ─── Progressive Disclosure (Accordion) ─── */
+    .co-section-content {
+      transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease;
+      overflow: hidden;
+      max-height: 1000px;
+      opacity: 1;
+    }
+    .co-section-content.collapsed {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      border: none;
+    }
+    .co-card-title {
+      cursor: pointer;
+      user-select: none;
+    }
+    .co-card-title::after {
+      content: '▼';
+      margin-right: auto;
+      font-size: 12px;
+      color: #94A3B8;
+      transition: transform 0.3s ease;
+    }
+    .co-card-title.collapsed::after {
+      transform: rotate(90deg);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="co-header">
+    <a href="index.html" class="co-logo">
+      <img src="logo.png?v=5" alt="AGS Technology Logo" style="height: 90px; width: auto; object-fit: contain; transform: scale(1.5); transform-origin: right center;">
+    </a>
+    <div class="co-steps">
+      <span>السلة</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      <span class="co-step-active">إتمام الطلب</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      <span>التأكيد</span>
+    </div>
+    <div class="co-secure">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <rect x="3" y="11" width="18" height="11" rx="2" />
+        <path d="M7 11V7a5 5 0 0110 0v4" />
+      </svg>
+      دفع آمن ومشفر
+    </div>
+    
+    <!-- Mobile Menu Toggle (Visible only on mobile via CSS) -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a href="index.html" class="nav-back-mobile" style="text-decoration: none; font-weight: 700; color: #0F2C59; display: flex; align-items: center; gap: 4px; font-size: 14px;">
+        العودة للمتجر
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <div class="co-container" id="checkoutContainer">
+
+    <!-- LEFT: FORMS -->
+    <div>
+      <form id="checkoutForm" novalidate>
+
+        <!-- Personal Info -->
+        <div class="co-card" id="card-personal">
+          <h2 class="co-card-title" onclick="toggleSection('personal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            المعلومات الشخصية
+          </h2>
+          <div class="co-section-content" id="section-personal">
+            <div class="form-row">
+              <div class="form-group">
+                <label>الاسم الكامل <span class="req">*</span></label>
+                <input type="text" id="customerName" class="form-control" placeholder="محمد أحمد" required oninput="checkProgress(); refreshSubmitButton()">
+              </div>
+              <div class="form-group">
+                <label>رقم الهاتف <span class="req">*</span></label>
+                <input type="tel" id="customerPhone" class="form-control" placeholder="07XXXXXXXX" required oninput="checkProgress(); refreshSubmitButton()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>البريد الإلكتروني <span class="req">*</span></label>
+                <input type="email" id="customerEmail" class="form-control" readonly>
+              </div>
+              <div class="form-group">
+                <label>اسم الشركة <span style="color:#94A3B8;font-weight:600;">(اختياري)</span></label>
+                <input type="text" id="customerCompany" class="form-control" placeholder="إذا كنت تشتري لشركة">
+              </div>
+            </div>
+            <button type="button" class="btn-place-order" style="margin-top: 10px; width: 100%; box-shadow: none; font-size: 14px;" onclick="toggleSection('delivery')" id="btn-next-delivery">متابعة إلى التوصيل ↓</button>
+          </div>
+        </div>
+
+        <!-- Delivery Info -->
+        <div class="co-card" id="card-delivery">
+          <h2 class="co-card-title collapsed" onclick="toggleSection('delivery')" id="title-delivery">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            معلومات التوصيل
+          </h2>
+          <div class="co-section-content collapsed" id="section-delivery">
+            <div class="form-row">
+              <div class="form-group">
+                <label>المحافظة <span class="req">*</span></label>
+                <select id="deliveryCity" class="form-control" required onchange="updateDeliveryFee(); checkProgress()">
+                  <option value="" disabled selected>اختر المحافظة...</option>
+                  <option value="عمان">عمان (التوصيل: 2.00 د.أ)</option>
+                  <option value="الزرقاء">الزرقاء (التوصيل: 3.00 د.أ)</option>
+                  <option value="إربد">إربد (التوصيل: 3.00 د.أ)</option>
+                  <option value="البلقاء">البلقاء (التوصيل: 3.00 د.أ)</option>
+                  <option value="المفرق">المفرق (التوصيل: 3.00 د.أ)</option>
+                  <option value="الكرك">الكرك (التوصيل: 3.00 د.أ)</option>
+                  <option value="الطفيلة">الطفيلة (التوصيل: 3.00 د.أ)</option>
+                  <option value="معان">معان (التوصيل: 3.00 د.أ)</option>
+                  <option value="العقبة">العقبة (التوصيل: 3.00 د.أ)</option>
+                  <option value="مادبا">مادبا (التوصيل: 3.00 د.أ)</option>
+                  <option value="جرش">جرش (التوصيل: 3.00 د.أ)</option>
+                  <option value="عجلون">عجلون (التوصيل: 3.00 د.أ)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>المنطقة / الحي <span class="req">*</span></label>
+                <input type="text" id="deliveryArea" class="form-control" placeholder="مثال: صويلح، حي الإرسال" required oninput="checkProgress()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>العنوان التفصيلي <span class="req">*</span></label>
+              <input type="text" id="deliveryAddress" class="form-control" placeholder="اسم الشارع، رقم المبنى، الطابق" required oninput="checkProgress()">
+            </div>
+            <button type="button" class="btn-place-order" style="margin-top: 10px; width: 100%; box-shadow: none; font-size: 14px;" onclick="toggleSection('payment')" id="btn-next-payment">متابعة إلى الدفع ↓</button>
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="co-card" id="card-payment">
+          <h2 class="co-card-title collapsed" onclick="toggleSection('payment')" id="title-payment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <rect x="1" y="4" width="22" height="16" rx="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            طريقة الدفع
+          </h2>
+          <div class="co-section-content collapsed" id="section-payment">
+
+          <label class="pay-option active" id="lbl-cod" onclick="selectPayment('COD', this)">
+            <input type="radio" name="paymentMethod" value="COD" checked>
+            <div class="pay-info">
+              <strong>💵 الدفع عند الاستلام (COD)</strong>
+              <small>ادفع نقداً للمندوب عند استلام طلبك — متاح في كل الأردن</small>
+            </div>
+          </label>
+
+          <label class="pay-option" id="lbl-cliq-umniah" onclick="selectPayment('CLIQ_UMNIAH', this)">
+            <input type="radio" name="paymentMethod" value="CLIQ_UMNIAH">
+            <div class="pay-info">
+              <strong>📱 كليك (CliQ) - أمنية / بنك الإتحاد</strong>
+              <small>التحويل إلى الرقم: <span id="num-umniah">0786776057</span> <button type="button" class="btn-copy"
+                  onclick="copyNum(event, 'num-umniah', this)">📋 نسخ</button></small>
+            </div>
+            <div class="pay-badges">
+              <span
+                style="background:#0F172A;color:white;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;">CliQ</span>
+            </div>
+          </label>
+
+          <label class="pay-option" id="lbl-cliq-zain" onclick="selectPayment('CLIQ_ZAIN', this)">
+            <input type="radio" name="paymentMethod" value="CLIQ_ZAIN">
+            <div class="pay-info">
+              <strong>📱 كليك (CliQ) - محفظة زين كاش</strong>
+              <small>التحويل إلى الرقم: <span id="num-zain">0791852909</span> <button type="button" class="btn-copy"
+                  onclick="copyNum(event, 'num-zain', this)">📋 نسخ</button></small>
+            </div>
+            <div class="pay-badges">
+              <span
+                style="background:#0F172A;color:white;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;">Zain
+                Cash</span>
+            </div>
+          </label>
+
+          <!-- GPAY Removed -->
+
+          <!-- CliQ Upload Section -->
+          <div id="cliqUploadSection" style="display:none;margin-top:1rem;">
+            <div class="upload-area" onclick="document.getElementById('cliqReceipt').click()">
+              <svg viewBox="0 0 24 24" width="32" height="32" stroke="#94A3B8" stroke-width="1.5" fill="none"
+                stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div style="font-weight:800;color:#1E293B;margin:8px 0 4px;font-size:0.95rem;">اضغط هنا لرفع صورة الإيصال
+                <span style="color:#EF4444;">*</span></div>
+              <div style="font-size:11px;color:#64748B;">JPG أو PNG، حتى 5 ميجا</div>
+              <input type="file" id="cliqReceipt" accept="image/png, image/jpeg" style="display:none;"
+                onchange="handleReceiptSelect(event)">
+              <div id="receiptPreviewContainer" style="display:none; margin-top:12px; text-align:center;">
+                <img id="receiptPreviewImg" src=""
+                  style="max-height:80px; border-radius:6px; border:1px solid #E2E8F0; object-fit:cover;">
+                <div style="font-size:11px;color:#22C55E;font-weight:800;margin-top:4px;">✅ تم إرفاق الصورة بنجاح</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trust-bar">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+              دفع آمن بتشفير SSL
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+              بياناتك محمية
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              ضمان استرداد الأموال
+            </span>
+          </div>
+
+          <button type="submit" class="btn-place-order" id="confirmOrderBtn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+            <span id="btnOrderText">جاري تحميل السلة...</span>
+          </button>
+          <p style="text-align:center;font-size:11px;color:#94A3B8;margin:8px 0 0;">بضغطك على الزر، أنت توافق على شروط
+            الاستخدام والبيع.</p>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Modal Removed -->
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="co-summary">
+      <div class="co-card">
+        <h2 class="co-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 01-8 0" />
+          </svg>
+          ملخص الطلب
+        </h2>
+
+        <!-- Items List -->
+        <div class="summary-items" id="checkoutItemsList">
+          <!-- Loading skeletons -->
+          <div style="padding:10px 0;border-bottom:1px solid #F1F5F9;">
+            <div class="skeleton" style="height:14px;width:70%;margin-bottom:6px;"></div>
+            <div class="skeleton" style="height:11px;width:40%;"></div>
+          </div>
+          <div style="padding:10px 0;">
+            <div class="skeleton" style="height:14px;width:60%;margin-bottom:6px;"></div>
+            <div class="skeleton" style="height:11px;width:35%;"></div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="total-row">
+          <span>المجموع الفرعي</span>
+          <span id="subtotalPrice" class="val">---</span>
+        </div>
+        <div class="total-row" id="firstOrderDiscountRow" style="display:none; color: #16A34A; font-weight: bold;">
+          <span>خصم خاص للطلب الأول (<span id="firstOrderDiscountPercent"></span>%)</span>
+          <span id="firstOrderDiscountValue" class="val" style="direction:ltr;"></span>
+        </div>
+        <div class="total-row">
+          <span>رسوم التوصيل</span>
+          <span id="deliveryPrice" style="color:#FF6B00;font-weight:700;">يحدد حسب المحافظة</span>
+        </div>
+        <hr class="divider">
+        <div class="total-row grand"
+          style="background:#E6F0FA;padding:1rem;border-radius:10px;border:1px solid #E2E8F0;">
+          <span>الإجمالي الكلي</span>
+          <span id="grandTotalPrice" class="val" style="font-size:1.4rem;">---</span>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div
+        style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:1rem;font-size:12px;text-align:center;">
+        <div style="font-weight:700;color:#0F2C59;margin-bottom:6px;">هل لديك أسئلة؟</div>
+        <a href="https://wa.me/962786776057" style="color:#FF6B00;font-weight:700;text-decoration:none;">📱 تواصل عبر واتساب</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span style="color:#FF6B00;font-weight:700;">0786776057</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=4"></script>
+  <script>
+    // ──────────────────────────────────────────
+    // State
+    // ──────────────────────────────────────────
+    let cartItems = [];
+    let baseSubtotal = 0;
+    let discountedSubtotal = 0;
+    let appliedDiscountPercent = 0;
+    let isLoaded = false;
+
+    const btn = () => document.getElementById('confirmOrderBtn');
+    const btnText = () => document.getElementById('btnOrderText');
+    const sc = window.supabaseClient;
+
+    // ──────────────────────────────────────────
+    // Boot
+    // ──────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!sc) { showFatalError('لم يتم الاتصال بقاعدة البيانات. تحقق من الإنترنت.'); return; }
+
+      // Auth check
+      const { data: { session } } = await sc.auth.getSession();
+      if (!session) { window.location.replace('index.html'); return; }
+
+      const user = session.user;
+      document.getElementById('userEmailDisplay') && (document.getElementById('userEmailDisplay').textContent = user.email);
+      document.getElementById('customerEmail').value = user.email;
+      if (user.user_metadata?.full_name) document.getElementById('customerName').value = user.user_metadata.full_name;
+
+      // Load cart from localStorage
+      try {
+        const raw = localStorage.getItem('checkoutCart') || localStorage.getItem('cart');
+        cartItems = raw ? JSON.parse(raw) : [];
+      } catch (e) { cartItems = []; }
+
+      if (!cartItems || cartItems.length === 0) {
+        showFatalError('سلة التسوق فارغة! سيتم توجيهك للمتجر.', 'products.html');
+        return;
+      }
+
+      // Load prices securely from backend
+      await loadSecurePrices();
+    });
+
+    // ──────────────────────────────────────────
+    // Secure Price Loading
+    // ──────────────────────────────────────────
+    async function loadSecurePrices() {
+      try {
+        const cartPayload = cartItems.map(i => ({
+          productId: i.id || i.productId || i.product_id,
+          quantity: parseInt(i.qty || i.quantity || 1)
+        })).filter(i => i.productId); // only valid items
+
+        let subtotal = 0;
+        let finalSubtotal = 0;
+        let discountPercent = 0;
+
+        // Try RPC first (secure backend calculation)
+        if (cartPayload.length > 0) {
+          const userEmail = document.getElementById('customerEmail').value.trim() || user?.email || null;
+          const { data: rpcData, error: rpcErr } = await sc.rpc('calculate_checkout_total', {
+            cart_items: cartPayload,
+            city: 'عمان',
+            user_email: userEmail
+          });
+
+          if (!rpcErr && rpcData && typeof rpcData.subtotal === 'number') {
+            subtotal = rpcData.subtotal;
+            finalSubtotal = rpcData.discounted_subtotal || rpcData.subtotal;
+            discountPercent = rpcData.first_order_discount_percent || 0;
+          } else {
+            // Fallback: use prices stored in cart items if RPC unavailable
+            console.warn('RPC unavailable, using local prices:', rpcErr?.message);
+            subtotal = cartItems.reduce((sum, i) => {
+              const price = parseFloat(i.price) || 0;
+              const qty = parseInt(i.qty || i.quantity || 1);
+              return sum + (price * qty);
+            }, 0);
+            finalSubtotal = subtotal;
+          }
+        }
+
+        baseSubtotal = subtotal;
+        discountedSubtotal = finalSubtotal;
+        appliedDiscountPercent = discountPercent;
+        isLoaded = true;
+        renderItems();
+        updateDeliveryFee();
+        refreshSubmitButton();
+
+      } catch (err) {
+        console.error('Price load error:', err);
+        // Fallback calculation
+        baseSubtotal = cartItems.reduce((sum, i) => {
+          const price = parseFloat(i.price) || 0;
+          const qty = parseInt(i.qty || i.quantity || 1);
+          return sum + (price * qty);
+        }, 0);
+        discountedSubtotal = baseSubtotal;
+        appliedDiscountPercent = 0;
+        isLoaded = true;
+        renderItems();
+        updateDeliveryFee();
+        refreshSubmitButton();
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Render cart items in summary
+    // ──────────────────────────────────────────
+    function renderItems() {
+      const list = document.getElementById('checkoutItemsList');
+      if (!list) return;
+
+      if (cartItems.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#94A3B8;padding:1rem;">لا توجد منتجات</p>';
+        return;
+      }
+
+      list.innerHTML = cartItems.map(item => {
+        const qty = parseInt(item.qty || item.quantity || 1);
+        const price = parseFloat(item.price) || 0;
+        const total = (price * qty).toFixed(2);
+        const img = item.image || item.image_url || '';
+        const title = item.title || item.name || 'منتج';
+
+        return `
+      <div class="s-item">
+        <div class="s-item-img">
+          ${img
+            ? `<img src="${img}" alt="${title}" loading="lazy">`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" width="24" height="24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`}
+        </div>
+        <div class="s-item-info">
+          <div class="s-item-title">${title}</div>
+          <div class="s-item-qty">× ${qty} &nbsp;·&nbsp; ${price.toFixed(2)} د.أ / قطعة</div>
+        </div>
+        <div class="s-item-price">${total} د.أ</div>
+      </div>`;
+      }).join('');
+
+      document.getElementById('subtotalPrice').textContent = baseSubtotal.toFixed(2) + ' د.أ';
+      const discountRow = document.getElementById('firstOrderDiscountRow');
+      if (appliedDiscountPercent > 0 && discountedSubtotal < baseSubtotal) {
+        if(discountRow) discountRow.style.display = 'flex';
+        const pctEl = document.getElementById('firstOrderDiscountPercent');
+        if(pctEl) pctEl.textContent = appliedDiscountPercent;
+        const discountAmount = baseSubtotal - discountedSubtotal;
+        const valEl = document.getElementById('firstOrderDiscountValue');
+        if(valEl) valEl.textContent = '-' + discountAmount.toFixed(2) + ' د.أ';
+        document.getElementById('subtotalPrice').style.textDecoration = 'line-through';
+        document.getElementById('subtotalPrice').style.color = '#94A3B8';
+        document.getElementById('subtotalPrice').style.fontSize = '0.9rem';
+      } else {
+        if(discountRow) discountRow.style.display = 'none';
+        document.getElementById('subtotalPrice').style.textDecoration = 'none';
+        document.getElementById('subtotalPrice').style.color = '#0F2C59';
+        document.getElementById('subtotalPrice').style.fontSize = '1.1rem';
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Accordion Logic
+    // ──────────────────────────────────────────
+    function toggleSection(sectionId) {
+      const sectionEl = document.getElementById(`section-${sectionId}`);
+      const titleEl = document.getElementById(`title-${sectionId}`);
+      const isCurrentlyOpen = !sectionEl?.classList.contains('collapsed');
+
+      // Close all sections
+      ['personal', 'delivery', 'payment'].forEach(id => {
+        document.getElementById(`section-${id}`)?.classList.add('collapsed');
+        document.getElementById(`title-${id}`)?.classList.add('collapsed');
+      });
+
+      // Open the clicked one if it was closed
+      if (!isCurrentlyOpen) {
+        sectionEl?.classList.remove('collapsed');
+        titleEl?.classList.remove('collapsed');
+      }
+    }
+
+    function checkProgress() {
+      // Check personal info
+      const name = document.getElementById('customerName')?.value.trim();
+      const phone = document.getElementById('customerPhone')?.value.trim();
+      if (name && phone && phone.length >= 10) {
+        // Automatically open delivery if not yet filled
+        const city = document.getElementById('deliveryCity')?.value;
+        const area = document.getElementById('deliveryArea')?.value.trim();
+        const addr = document.getElementById('deliveryAddress')?.value.trim();
+        
+        if (!city || !area || !addr) {
+           // We could auto-open delivery if personal is filled, but wait, if they are typing, we don't want to jump while typing.
+           // It's better they click "Next". But for delivery -> payment jump:
+        }
+        
+        // If delivery is fully filled, we can auto-open payment.
+        if (city && area && addr) {
+          // Open payment only if they just finished delivery
+          if (document.getElementById('section-delivery')?.classList.contains('collapsed') === false) {
+             toggleSection('payment');
+          }
+        }
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Delivery Fee (live update)
+    // ──────────────────────────────────────────
+    function updateDeliveryFee() {
+      const city = document.getElementById('deliveryCity')?.value;
+      const delivEl = document.getElementById('deliveryPrice');
+      const totalEl = document.getElementById('grandTotalPrice');
+
+      if (!city) {
+        if (delivEl) delivEl.textContent = 'يحدد حسب المحافظة';
+        if (totalEl) totalEl.textContent = baseSubtotal > 0 ? baseSubtotal.toFixed(2) + ' د.أ' : '---';
+        return;
+      }
+
+      let currentSubtotal = (discountedSubtotal > 0 || appliedDiscountPercent > 0) ? discountedSubtotal : baseSubtotal;
+      let fee = city === 'عمان' ? 2.00 : 3.00;
+      if (currentSubtotal > 100) fee = 0; // Free delivery condition
+
+      if (delivEl) {
+        if (fee === 0) {
+          delivEl.innerHTML = '<span style="color:#16A34A; font-weight:bold;">توصيل مجاني!</span>';
+        } else {
+          delivEl.textContent = fee.toFixed(2) + ' د.أ';
+          delivEl.style.color = '#1565C0';
+        }
+      }
+      const grand = currentSubtotal + fee;
+      if (totalEl) totalEl.textContent = grand.toFixed(2) + ' د.أ';
+
+      refreshSubmitButton();
+    }
+
+    // ──────────────────────────────────────────
+    // Utilities
+    // ──────────────────────────────────────────
+    function copyNum(e, id, btnEl) {
+      e.stopPropagation(); // prevent clicking the radio
+      const num = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(num).then(() => {
+        const oldHtml = btnEl.innerHTML;
+        btnEl.innerHTML = '✅ تم النسخ';
+        btnEl.style.background = '#BBF7D0';
+        btnEl.style.color = '#166534';
+        setTimeout(() => {
+          btnEl.innerHTML = oldHtml;
+          btnEl.style.background = '';
+          btnEl.style.color = '';
+        }, 2000);
+      });
+    }
+
+    function handleReceiptSelect(e) {
+      const file = e.target.files[0];
+      const previewContainer = document.getElementById('receiptPreviewContainer');
+      const previewImg = document.getElementById('receiptPreviewImg');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewContainer.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.style.display = 'none';
+        previewImg.src = '';
+      }
+      refreshSubmitButton();
+    }
+
+    // ──────────────────────────────────────────
+    // Submit Button state
+    // ──────────────────────────────────────────
+    function refreshSubmitButton() {
+      const b = btn();
+      const bt = btnText();
+      const city = document.getElementById('deliveryCity')?.value;
+      let fee = city === 'عمان' ? 2.00 : (city ? 3.00 : 0);
+      if (baseSubtotal > 100) fee = 0;
+      const total = baseSubtotal + fee;
+
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+      const fileInput = document.getElementById('cliqReceipt');
+      let isCliqValid = true;
+      if (paymentMethod && paymentMethod.startsWith('CLIQ')) {
+        isCliqValid = fileInput && fileInput.files && fileInput.files.length > 0;
+      }
+
+      if (!isLoaded) {
+        b.disabled = true;
+        bt.textContent = 'جاري تحميل السلة...';
+      } else if (baseSubtotal <= 0) {
+        b.disabled = true;
+        bt.textContent = 'المجموع صفر — تحقق من سلتك';
+      } else if (!document.getElementById('customerName')?.value.trim()) {
+        b.disabled = true;
+        bt.textContent = 'الرجاء إدخال الاسم الكامل';
+      } else if (!document.getElementById('customerPhone')?.value.trim()) {
+        b.disabled = true;
+        bt.textContent = 'الرجاء إدخال رقم الهاتف';
+      } else if (!city) {
+        b.disabled = true;
+        bt.textContent = 'اختر المحافظة أولاً';
+      } else if (!paymentMethod) {
+        b.disabled = true;
+        bt.textContent = 'اختر طريقة الدفع أولاً';
+      } else if (!isCliqValid) {
+        b.disabled = true;
+        bt.textContent = 'يرجى إرفاق صورة الإيصال';
+      } else {
+        b.disabled = false;
+        bt.textContent = `تأكيد الطلب — ${total.toFixed(2)} د.أ`;
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Payment selection
+    // ──────────────────────────────────────────
+    function selectPayment(method, labelEl) {
+      document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('active'));
+      labelEl.classList.add('active');
+      labelEl.querySelector('input[type="radio"]').checked = true;
+
+      const cliqUpload = document.getElementById('cliqUploadSection');
+      if (cliqUpload) {
+        cliqUpload.style.display = method.startsWith('CLIQ') ? 'block' : 'none';
+      }
+      refreshSubmitButton();
+    }
+
+    // ──────────────────────────────────────────
+    // Form submit
+    // ──────────────────────────────────────────
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const city = document.getElementById('deliveryCity').value;
+      if (!city) { alert('يرجى اختيار المحافظة'); return; }
+      if (baseSubtotal <= 0) { alert('خطأ: مجموع الطلب يساوي صفر. يرجى إعادة المحاولة.'); return; }
+
+      const b = btn();
+      const origText = btnText().textContent;
+      b.disabled = true;
+      btnText().textContent = '⏳ جاري إرسال الطلب...';
+
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const email = document.getElementById('customerEmail').value.trim();
+      const company = document.getElementById('customerCompany').value.trim();
+      const area = document.getElementById('deliveryArea')?.value.trim() || '';
+      const address = document.getElementById('deliveryAddress').value.trim();
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      let fee = city === 'عمان' ? 2.00 : 3.00;
+      if (baseSubtotal > 100) fee = 0;
+      const total = baseSubtotal + fee;
+
+      if (paymentMethod === 'CARD') {
+        alert('سيتم تحويلك لصفحة الدفع (PayTabs) عند تفعيل البوابة. الطلب محفوظ الآن كـ COD مؤقتاً.');
+      }
+
+      const cartPayload = cartItems.map(i => ({
+        productId: i.id || i.productId || i.product_id,
+        quantity: parseInt(i.qty || i.quantity || 1),
+        title: i.title || i.name || '',
+        price: parseFloat(i.price) || 0
+      }));
+
+      const orderPayload = {
+        customer_name: name,
+        customer_company: company || null,
+        customer_email: email,
+        customer_phone: phone,
+        delivery_city: city,
+        delivery_address: `${area ? area + '، ' : ''}${address}`,
+        payment_method: paymentMethod,
+        delivery_fee: fee,
+        total_amount: total,
+        status: 'بانتظار التأكيد',
+        payment_status:
+          paymentMethod === 'COD' ? 'الدفع عند الاستلام' :
+            paymentMethod.startsWith('CLIQ') ? 'بانتظار تحويل كليك' : 'غير مدفوع',
+        items: cartPayload
+      };
+
+      if (paymentMethod.startsWith('CLIQ')) {
+        const fileInput = document.getElementById('cliqReceipt');
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert('يرجى إرفاق صورة إيصال التحويل (سكرين شوت) لإتمام الطلب.');
+          b.disabled = false;
+          btnText().textContent = origText;
+          return;
+        }
+      }
+
+      if (paymentMethod.startsWith('CLIQ')) {
+        // Direct insertion for CliQ after uploading file
+        const fileInput = document.getElementById('cliqReceipt');
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `cliq-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+        const { error: uploadError } = await sc.storage.from('product-media').upload(fileName, file);
+
+        if (uploadError) {
+          console.error('CliQ upload error', uploadError);
+          alert('فشل رفع صورة الإيصال. يرجى المحاولة مجدداً.');
+          b.disabled = false;
+          btnText().textContent = origText;
+          return;
+        }
+
+        const { data: publicUrlData } = sc.storage.from('product-media').getPublicUrl(fileName);
+        orderPayload.payment_status = `بانتظار تأكيد الإيصال (${publicUrlData.publicUrl})`;
+
+        await executeOrderInsertion(orderPayload);
+      } else {
+        await executeOrderInsertion(orderPayload);
+      }
+    });
+
+    // Test Payment logic removed
+
+    async function executeOrderInsertion(payload) {
+      const origText = btnText().textContent;
+      const b = btn();
+      try {
+        const { data, error } = await sc.from('orders').insert([payload]).select();
+
+        if (error) throw error;
+
+        // Decrease stock count for each product
+        try {
+            for (const item of payload.items) {
+                const { data: pData } = await sc.from('products').select('stock').eq('id', item.productId).single();
+                if (pData && typeof pData.stock === 'number') {
+                    const newStock = Math.max(0, pData.stock - item.quantity);
+                    await sc.from('products').update({ stock: newStock }).eq('id', item.productId);
+                }
+            }
+        } catch (stErr) {
+            console.error('Stock decrease error:', stErr);
+        }
+
+        // Clear cart
+        localStorage.removeItem('checkoutCart');
+        localStorage.removeItem('cart');
+
+        // Show success
+        document.getElementById('checkoutContainer').innerHTML = `
+        <div class="success-wrap">
+          <div style="width:80px;height:80px;background:#F0FDF4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <h2 style="font-size:1.75rem;font-weight:800;color:#0F172A;margin-bottom:.75rem;">🎉 تم استلام طلبك بنجاح!</h2>
+          <div style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:12px; padding:1.5rem; max-width:480px; margin:0 auto 2rem; text-align:right;">
+             <div style="margin-bottom:10px;"><strong>رقم الطلب:</strong> <span style="font-family:monospace;font-size:1.1rem;color:#1565C0;">#${data?.[0]?.id?.split('-')[0] || Math.floor(Math.random() * 100000)}</span></div>
+             <div style="margin-bottom:10px;"><strong>حالة الدفع:</strong> ${payload.payment_method.startsWith('CLIQ') ? '<span style="color:#F59E0B;">قيد المراجعة (سيتم التأكيد خلال ساعات العمل)</span>' : 'الدفع عند الاستلام'}</div>
+             <div style="color:#64748B;font-size:0.95rem;line-height:1.6;margin-top:1rem;">
+               شكراً لك <strong>${payload.customer_name}</strong>! تم استلام طلبك وسيتم التواصل معك على الرقم <strong dir="ltr">${payload.customer_phone}</strong> قريباً لتأكيد موعد التوصيل.
+             </div>
+          </div>
+          <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:.85rem 2rem;background:#1565C0;color:#fff;text-decoration:none;border-radius:10px;font-weight:800;font-size:15px;">
+              العودة للرئيسية
+            </a>
+            <a href="https://wa.me/962786776057" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:.85rem 2rem;background:#22C55E;color:#fff;text-decoration:none;border-radius:10px;font-weight:800;font-size:15px;">
+              📱 تتبع الطلب عبر واتساب
+            </a>
+          </div>
+        </div>`;
+
+      } catch (err) {
+        console.error('Order error:', err);
+        alert(`حدث خطأ: ${err.message || 'تعذر إرسال الطلب، يرجى المحاولة مجدداً.'}`);
+        b.disabled = false;
+        btnText().textContent = origText;
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Fatal error helper
+    // ──────────────────────────────────────────
+    function showFatalError(msg, redirect) {
+      alert(msg);
+      if (redirect) setTimeout(() => window.location.replace(redirect), 500);
+    }
+  </script>
+</body>
+
+</html>

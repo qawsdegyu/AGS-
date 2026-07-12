@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم الإدارية | AGS Technology - شركة الدقة للسلامة العامة</title>
+  <meta name="description" content="لوحة التحكم الإدارية لموقع شركة الدقة للسلامة العامة وشركة المنار لأجهزة الإطفاء والإنذار. مخصصة للمشرفين والإدارة." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="author" content="Eng. Osama Mossa Al-Salhout" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body style="background:#F1F5F9;overflow-x:hidden; display: none; padding-top: 0 !important; margin: 0 !important;" id="dashboard-body">
+
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <nav class="dash-nav" style="padding-top: var(--space-4);">
+        <!-- Overview -->
+        <div class="dash-nav-section">
+          <div class="dash-nav-label">نظرة عامة</div>
+          <a class="dash-nav-link active" onclick="showSection('overview',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            الرئيسية (Overview)
+          </a>
+          <a class="dash-nav-link" onclick="showSection('analytics',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            التقارير والتحليلات
+          </a>
+        </div>
+
+        <!-- Products & Orders -->
+        <div class="dash-nav-section">
+          <div class="dash-nav-label">المبيعات</div>
+          <a class="dash-nav-link" onclick="showSection('orders',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+            إدارة الطلبات
+            <span class="dash-nav-badge" id="nav-badge-orders" style="display:none;"></span>
+          </a>
+          <a class="dash-nav-link" onclick="showSection('rfqs',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            عروض الأسعار RFQ
+            <span class="dash-nav-badge" id="nav-badge-rfqs" style="display:none;"></span>
+          </a>
+          <a class="dash-nav-link" onclick="showSection('products',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+            </svg>
+            إدارة المنتجات
+          </a>
+
+        </div>
+
+        <!-- Services & Marketing -->
+        <div class="dash-nav-section">
+          <div class="dash-nav-label">الخدمات والتسويق</div>
+          <a class="dash-nav-link" onclick="showSection('announcements',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            إدارة الإعلانات
+          </a>
+          <a class="dash-nav-link" onclick="showSection('services_manage',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+            إدارة الخدمات
+          </a>
+          <a class="dash-nav-link" onclick="showSection('features_manage',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            إدارة مميزات الشركة
+          </a>
+          <a class="dash-nav-link" onclick="showSection('home_features_manage',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            إدارة مميزات الرئيسية
+          </a>
+          <a class="dash-nav-link" onclick="showSection('inspections',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            مواعيد الفحص
+            <span class="dash-nav-badge" id="nav-badge-inspections" style="display:none;"></span>
+          </a>
+        </div>
+
+        <!-- Customers -->
+        <div class="dash-nav-section">
+          <div class="dash-nav-label">العملاء</div>
+          <a class="dash-nav-link" onclick="showSection('customers',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg>
+            العملاء
+          </a>
+          <a class="dash-nav-link" onclick="showSection('registered_users',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg>
+            الحسابات المسجلة
+          </a>
+          <a class="dash-nav-link" onclick="showSection('payments',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            المدفوعات والفواتير
+          </a>
+        </div>
+
+        <!-- Settings -->
+        <div class="dash-nav-section">
+          <div class="dash-nav-label">الإعدادات</div>
+          <a class="dash-nav-link" onclick="showSection('store_settings',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            إعدادات المتجر
+          </a>
+        </div>
+
+
+      </nav>
+
+      <!-- User Info -->
+      <div style="padding:var(--space-4) var(--space-5);border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex;align-items:center;gap:var(--space-3);">
+          <div id="adminAvatar"
+            style="width:38px;height:38px;background:linear-gradient(135deg,var(--primary-600),var(--accent-500));border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:var(--text-sm);">
+            م</div>
+          <div>
+            <div id="adminNameDisplay" style="color:var(--white);font-weight:700;font-size:var(--text-sm);">جاري
+              التحميل...</div>
+            <div id="adminEmailDisplay" style="color:rgba(255,255,255,0.4);font-size:11px;">...</div>
+          </div>
+          <button
+            style="margin-right:auto;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;padding:4px;"
+            title="تسجيل الخروج">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div>
+          <div class="dashboard-title" id="dashTitle">لوحة التحكم الرئيسية</div>
+          <div class="dashboard-subtitle" id="dashSubtitle">مرحباً، محمد! هذا ما يحدث في متجرك اليوم.</div>
+        </div>
+        <div class="dashboard-header-actions">
+          <!-- Notifications -->
+          <div style="position:relative;">
+            <button onclick="toggleNotifications()" class="nav-action-btn" style="position:relative;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 01-3.46 0" />
+              </svg>
+              <span id="notif-count-badge"
+                style="position:absolute;top:-3px;left:-3px;width:16px;height:16px;background:var(--danger);border-radius:50%;font-size:10px;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;border:2px solid white;">0</span>
+            </button>
+            <div id="notifPanel"
+              style="display:none;position:absolute;top:calc(100% + 8px);left:-200px;width:320px;background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-xl);border:1px solid var(--gray-200);z-index:var(--z-dropdown);">
+              <div
+                style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:700;color:var(--dark-800);">الإشعارات</span>
+                <span style="font-size:11px;color:var(--primary-600);cursor:pointer;"
+                  onclick="document.getElementById('notif-count-badge').textContent='0'; this.style.opacity=0.5;">قراءة
+                  الكل</span>
+              </div>
+              <div id="notifList" style="padding:var(--space-2); max-height: 350px; overflow-y: auto;">
+                <div style="padding:1.5rem;text-align:center;color:var(--gray-400);font-size:13px;">جاري التحميل...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a href="index.html" class="btn btn-primary btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            </svg>
+            الرجوع إلى الموقع
+          </a>
+        </div>
+      </div>
+
+      <!-- Dashboard Sections -->
+      <div class="dashboard-content">
+
+        <!-- ===== OVERVIEW SECTION ===== -->
+        <div id="section-overview">
+
+
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card blue">
+              <div class="kpi-card-header">
+                <div class="kpi-icon" style="background:#EFF6FF;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 01-8 0" />
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-orders-count">...</div>
+              <div class="kpi-label">إجمالي الطلبات</div>
+            </div>
+            <div class="kpi-card orange">
+              <div class="kpi-card-header">
+                <div class="kpi-icon" style="background:#FFF7ED;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-sales-amount">...</div>
+              <div class="kpi-label">إجمالي المبيعات (د.أ)</div>
+            </div>
+            <div class="kpi-card green">
+              <div class="kpi-card-header">
+                <div class="kpi-icon" style="background:#F0FDF4;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-rfqs-count">...</div>
+              <div class="kpi-label">عروض أسعار معلقة (RFQ)</div>
+            </div>
+            <div class="kpi-card purple">
+              <div class="kpi-card-header">
+                <div class="kpi-icon" style="background:#F5F3FF;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-products-count">...</div>
+              <div class="kpi-label">المنتجات في المتجر</div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="dashboard-grid">
+            <!-- Sales Chart -->
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title">أداء المبيعات</div>
+                  <div class="chart-card-subtitle">آخر 7 أشهر</div>
+                </div>
+                <div class="tabs" style="background:var(--gray-100);">
+                  <button class="tab-btn chart-filter-btn active" data-period="monthly"
+                    style="padding:var(--space-1) var(--space-3);font-size:11px;">شهري</button>
+                  <button class="tab-btn chart-filter-btn" data-period="weekly"
+                    style="padding:var(--space-1) var(--space-3);font-size:11px;">أسبوعي</button>
+                </div>
+              </div>
+              <canvas id="salesChart" height="280"></canvas>
+            </div>
+
+            <!-- Category Donut -->
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title">المبيعات بالفئة</div>
+                  <div class="chart-card-subtitle">هذا الشهر</div>
+                </div>
+              </div>
+              <canvas id="categoryChart" height="200"></canvas>
+              <div id="category-stats-list"
+                style="margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2);">
+                <div style="text-align:center;color:var(--gray-500);font-size:12px;">جاري التحميل...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders + Calendar -->
+          <div class="dashboard-grid">
+            <!-- Orders Table -->
+            <div class="data-table-card">
+              <div class="data-table-header">
+                <div>
+                  <div class="chart-card-title">آخر الطلبات</div>
+                  <div class="chart-card-subtitle">12 طلب جديد اليوم</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="showSection('orders',null)">عرض الكل</button>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>رقم الطلب</th>
+                    <th>العميل</th>
+                    <th>المنتج</th>
+                    <th>المبلغ</th>
+                    <th>الحالة</th>
+                    <th>الإجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-orders-list">
+                  <tr>
+                    <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Calendar + Upcoming -->
+            <div>
+              <div class="calendar-card" style="margin-bottom:var(--space-4);">
+                <div class="calendar-header">
+                  <button onclick="calendarNavMonth(-1)"
+                    style="background:none;border:none;cursor:pointer;color:var(--gray-600);padding:4px;border-radius:6px;transition:background 0.2s;"
+                    onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                  <span style="font-weight:700;color:var(--dark-800);font-size:var(--text-sm);"
+                    id="calendarMonthLabel">جاري التحميل...</span>
+                  <button onclick="calendarNavMonth(1)"
+                    style="background:none;border:none;cursor:pointer;color:var(--gray-600);padding:4px;border-radius:6px;transition:background 0.2s;"
+                    onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                  <div class="calendar-day-name">س</div>
+                  <div class="calendar-day-name">ح</div>
+                  <div class="calendar-day-name">ن</div>
+                  <div class="calendar-day-name">ث</div>
+                  <div class="calendar-day-name">ر</div>
+                  <div class="calendar-day-name">خ</div>
+                  <div class="calendar-day-name">ج</div>
+                  <!-- Days will be injected dynamically by JS -->
+                </div>
+              </div>
+
+              <!-- Recent RFQs -->
+              <div class="chart-card">
+                <div class="chart-card-header" style="margin-bottom:var(--space-3);">
+                  <div class="chart-card-title">أحدث عروض الأسعار (RFQ)</div>
+                </div>
+                <div id="recent-rfqs-list">
+                  <div style="text-align:center;padding:1rem;">جاري التحميل...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stats Column -->
+          <div class="dashboard-grid" style="margin-top:0;">
+            <div>
+
+              <div class="chart-card">
+                <div class="chart-card-title" style="margin-bottom:var(--space-4);">حالة عروض الأسعار</div>
+                <canvas id="rfqChart" height="160"></canvas>
+              </div>
+            </div>
+          </div>
+        </div><!-- end overview section -->
+
+        <!-- ===== INSPECTION DETAIL MODAL ===== -->
+        <div id="calendarInspectionModal"
+          style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;">
+          <div
+            style="background:var(--white);border-radius:var(--radius-xl);padding:var(--space-8);max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-xl);position:relative;">
+            <button onclick="closeInspectionModal()"
+              style="position:absolute;top:var(--space-4);left:var(--space-4);background:var(--gray-100);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <h3 id="inspModalTitle"
+              style="font-size:var(--text-lg);font-weight:800;color:var(--dark-900);margin-bottom:var(--space-5);padding-left:var(--space-8);">
+              مواعيد الفحص</h3>
+            <div id="inspModalBody"></div>
+          </div>
+        </div>
+
+        <!-- Placeholder sections for other nav items -->
+        <div id="section-analytics" style="display:none;">
+          <div class="dashboard-grid">
+            <div class="chart-card" style="grid-column: 1 / -1;">
+              <div class="chart-card-title" style="margin-bottom:var(--space-4);">تفصيل المبيعات والإيرادات</div>
+              <canvas id="analyticsRevenueChart" height="80"></canvas>
+            </div>
+
+            <div class="data-table-card">
+              <div class="data-table-header">
+                <div class="chart-card-title">أكثر المنتجات مبيعاً</div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>المنتج</th>
+                    <th>الفئة</th>
+                    <th>الكمية المباعة</th>
+                    <th>الإيراد</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-top-products">
+                  <tr>
+                    <td colspan="4" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-title" style="margin-bottom:var(--space-4);">المبيعات حسب الفئة</div>
+              <canvas id="analyticsCategoryChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-orders" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">إدارة جميع الطلبات</div>
+              <div style="display:flex;gap:var(--space-2);">
+                <select class="sort-select">
+                  <option>كل الحالات</option>
+                  <option>قيد المعالجة</option>
+                  <option>تم الشحن</option>
+                  <option>تم التسليم</option>
+                  <option>ملغى</option>
+                </select>
+              </div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>العميل</th>
+                  <th>المنتجات</th>
+                  <th>الإجمالي</th>
+                  <th>الدفع</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:700;color:var(--primary-700);">#1042</td>
+                  <td>شركة الأردن للصناعات</td>
+                  <td>BW™ Clip4 × 3</td>
+                  <td>855 د.أ</td>
+                  <td><span class="badge badge-success">مدفوع</span></td>
+                  <td><span class="order-status processing">معالجة</span></td>
+                  <td>8 يوليو 2026</td>
+                  <td><button class="btn btn-primary btn-sm" style="font-size:11px;">معالجة</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:700;color:var(--primary-700);">#1041</td>
+                  <td>مؤسسة البناء الوطني</td>
+                  <td>خوذة × 20</td>
+                  <td>900 د.أ</td>
+                  <td><span class="badge badge-success">مدفوع</span></td>
+                  <td><span class="order-status shipped">شحن</span></td>
+                  <td>7 يوليو 2026</td>
+                  <td><button class="btn btn-outline btn-sm" style="font-size:11px;">تفاصيل</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:700;color:var(--primary-700);">#1040</td>
+                  <td>مصنع النسيج الوطني</td>
+                  <td>testo 816</td>
+                  <td>450 د.أ</td>
+                  <td><span class="badge badge-success">مدفوع</span></td>
+                  <td><span class="order-status delivered">تسليم</span></td>
+                  <td>6 يوليو 2026</td>
+                  <td><button class="btn btn-outline btn-sm" style="font-size:11px;">فاتورة</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-rfqs" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">طلبات عروض الأسعار (RFQ)</div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>الشركة</th>
+                  <th>جهة الاتصال</th>
+                  <th>الهاتف</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="rfqs-list">
+                <tr>
+                  <td colspan="7" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-inspections" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+            <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);">مواعيد الفحص</h3>
+          </div>
+          <div class="data-table-card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>العميل / الشركة</th>
+                  <th>الهاتف</th>
+                  <th>التاريخ</th>
+                  <th>الخدمة المطلوبة</th>
+                  <th>الحالة</th>
+                  <th>تاريخ الطلب</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="inspections-list">
+                <tr>
+                  <td colspan="7" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-products" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+            <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);">إدارة المنتجات</h3>
+            <div style="display:flex; gap: 8px;">
+              <button class="btn btn-outline" style="border-color:var(--primary-600);color:var(--primary-600);" onclick="openGlobalDiscountModal()">
+                تطبيق خصم شامل
+              </button>
+              <button class="btn btn-primary" onclick="openProductModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                إضافة منتج جديد
+              </button>
+            </div>
+          </div>
+          <div class="data-table-card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الفئة</th>
+                  <th>السعر</th>
+                  <th>المخزون</th>
+                  <th>الحالة</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="products-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-announcements" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+            <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);">إدارة الإعلانات</h3>
+            <button class="btn btn-primary" onclick="openAnnouncementModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              إضافة إعلان جديد
+            </button>
+          </div>
+          <div class="data-table-card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الصورة</th>
+                  <th>العنوان</th>
+                  <th>الرابط</th>
+                  <th>مفعل</th>
+                  <th>تاريخ الإضافة</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="announcements-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-services_manage" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+            <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);">إدارة الخدمات</h3>
+            <div style="display:flex;gap:var(--space-3);">
+              <button class="btn btn-primary" onclick="openServiceModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                إضافة خدمة جديدة
+              </button>
+            </div>
+          </div>
+          <div class="data-table-card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الخدمة (عربي)</th>
+                  <th>القسم</th>
+                  <th>الخدمة (إنجليزي)</th>
+                  <th>السعر المبدئي</th>
+                  <th>اللون</th>
+                  <th>تاريخ الإضافة</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="services-manage-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-inspections" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">جدول مواعيد الفحص البيئي</div>
+              <button class="btn btn-primary btn-sm" style="display: none;">حجز موعد جديد</button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>تاريخ الفحص</th>
+                  <th>العميل / الشركة</th>
+                  <th>نوع الفحص</th>
+                  <th>رقم الهاتف</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>الحالة</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="inspections-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-customers" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">إدارة العملاء</div>
+              <button class="btn btn-primary btn-sm" style="display: none;">إضافة عميل</button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>اسم العميل / الشركة</th>
+                  <th>جهة الاتصال</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>الهاتف</th>
+                  <th>تاريخ التسجيل</th>
+                </tr>
+              </thead>
+              <tbody id="customers-list">
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-registered_users" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">الحسابات المسجلة (مستخدمي الموقع)</div>
+              <button class="btn btn-primary btn-sm" onclick="sendBulkEmail()"
+                style="background:#EA4335;border-color:#EA4335;display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                إرسال رسالة جماعية (Gmail)
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>البريد الإلكتروني (Gmail)</th>
+                  <th>تاريخ التسجيل</th>
+                </tr>
+              </thead>
+              <tbody id="registered-users-list">
+                <tr>
+                  <td colspan="3" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-payments" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">المدفوعات والفواتير</div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>العميل / الشركة</th>
+                  <th>المبلغ</th>
+                  <th>تاريخ الطلب</th>
+                  <th>حالة الدفع</th>
+                  <th>الفاتورة</th>
+                </tr>
+              </thead>
+              <tbody id="invoices-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-settings" style="display:none;">
+          <div
+            style="background:var(--white);border-radius:var(--radius-2xl);padding:var(--space-8);text-align:center;color:var(--gray-500);">
+            <div style="font-size:60px;margin-bottom:var(--space-4);">⚙️</div>
+            <h3>إعدادات النظام</h3>
+            <p>إدارة الإعدادات العامة والأدوار والصلاحيات</p>
+          </div>
+        </div>
+
+        <div id="section-features_manage" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">إدارة مميزات الشركة (About Us Features)</div>
+              <button class="btn btn-primary btn-sm" onclick="openFeatureModal()"
+                style="display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                إضافة ميزة جديدة
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الأيقونة</th>
+                  <th>العنوان</th>
+                  <th>الوصف</th>
+                  <th>اللون</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="features-list">
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+
+        <div id="section-home_features_manage" style="display:none;">
+          <div class="data-table-card">
+            <div class="data-table-header">
+              <div class="chart-card-title">إدارة مميزات الرئيسية (Home Features Strip)</div>
+              <button class="btn btn-primary btn-sm" onclick="openHomeFeatureModal()"
+                style="display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                إضافة ميزة جديدة
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الترتيب</th>
+                  <th>الأيقونة</th>
+                  <th>العنوان</th>
+                  <th>النص الفرعي</th>
+                  <th>اللون (Hex)</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="home-features-list">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="section-store_settings" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+            <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);">إعدادات المتجر</h3>
+          </div>
+          
+          <div class="data-table-card" style="padding:var(--space-6);">
+            <h4 style="font-size:var(--text-md);font-weight:700;color:var(--dark-800);margin-bottom:var(--space-4);border-bottom:1px solid var(--gray-200);padding-bottom:var(--space-3);">إعدادات الخصومات</h4>
+            
+            <div class="form-group" style="max-width: 400px; margin-bottom:var(--space-4);">
+              <label class="form-label" style="font-weight:600;">خصم الطلب الأول (%)</label>
+              <input type="number" id="settingFirstOrderDiscount" class="form-control" placeholder="مثال: 10" min="0" max="100" />
+              <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">
+                سيتم تطبيق هذه النسبة كخصم تلقائي على إجمالي قيمة المشتريات للزبون عند إتمامه لطلبه الأول في المتجر.
+              </div>
+            </div>
+            
+            <div style="display:flex; gap: var(--space-3);">
+              <button class="btn btn-primary" onclick="saveStoreSettings()" id="btnSaveSettings">حفظ الإعدادات</button>
+            </div>
+          </div>
+        </div>
+
+      <!-- Generic Details Modal -->
+      <div id="detailsModal" class="modal-overlay"
+        style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+        <div
+          style="background:var(--white);width:90%;max-width:600px;border-radius:var(--radius-2xl);box-shadow:var(--shadow-2xl);overflow:hidden;animation:fadeInUp 0.3s ease;">
+          <div
+            style="padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;background:var(--gray-50);">
+            <h3 id="detailsModalTitle" style="font-size:var(--text-lg);font-weight:800;color:var(--dark-800);">التفاصيل
+            </h3>
+            <button onclick="document.getElementById('detailsModal').style.display='none'"
+              style="background:none;border:none;color:var(--gray-500);cursor:pointer;padding:4px;border-radius:var(--radius-md);"
+              onmouseover="this.style.background='var(--gray-200)'" onmouseout="this.style.background='none'">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div id="detailsModalBody"
+            style="padding:var(--space-6);max-height:60vh;overflow-y:auto;font-size:var(--text-sm);color:var(--gray-700);line-height:1.8;">
+            <!-- Dynamic Content -->
+          </div>
+          <div
+            style="padding:var(--space-4) var(--space-6);border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;background:var(--gray-50);">
+            <button class="btn btn-outline"
+              onclick="document.getElementById('detailsModal').style.display='none'">إغلاق</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Product Modal -->
+  <!-- Global Discount Modal -->
+  <div id="globalDiscountModal"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;">
+    <div
+      style="background:var(--white);border-radius:var(--radius-xl);padding:var(--space-8);width:400px;max-width:90%;box-shadow:var(--shadow-xl);position:relative;">
+      <button onclick="closeGlobalDiscountModal()"
+        style="position:absolute;top:var(--space-4);left:var(--space-4);background:var(--gray-100);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <h3 style="font-size:var(--text-lg);font-weight:800;color:var(--dark-900);margin-bottom:var(--space-5);">تطبيق خصم على جميع المنتجات</h3>
+      <div class="form-group" style="margin-bottom:var(--space-4);">
+        <label class="form-label">نسبة الخصم المئوية (%) لجميع المنتجات</label>
+        <input type="number" id="globalDiscountValue" class="form-control" placeholder="مثال: 15" min="0" max="100" />
+        <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">ملاحظة: سيتم تطبيق هذه النسبة على جميع المنتجات في المتجر بشكل فوري. سيتم مسح أي خصم سابق.</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+        <button type="button" class="btn btn-outline" onclick="closeGlobalDiscountModal()">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="applyGlobalDiscount()" id="btnGlobalDiscountSave">تطبيق الخصم</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="productModal"
+    style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);">
+      <h3 style="margin-bottom:var(--space-4);font-size:var(--text-xl);font-weight:800;" id="productModalTitle">إضافة
+        منتج جديد</h3>
+      <form id="productForm" onsubmit="saveProduct(event)">
+        <input type="hidden" id="prodId" />
+        <input type="hidden" id="existingImages" value="[]" />
+        <input type="hidden" id="existingVideos" value="[]" />
+        <input type="hidden" id="existingDocuments" value="[]" />
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">عنوان المنتج</label>
+          <input type="text" id="prodTitle" class="form-control" required />
+        </div>
+        <div class="grid grid-2" style="gap:var(--space-3);margin-bottom:var(--space-3);">
+          <div class="form-group">
+            <label class="form-label">العلامة التجارية</label>
+            <input type="text" id="prodBrand" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>الفئة</label>
+            <select id="prodCat" class="form-control" required>
+              <option value="measurement">أجهزة الفحص والقياس</option>
+              <option value="safety">أدوات السلامة العامة</option>
+              <option value="attendance">أجهزة تسجيل دوام الموظفين</option>
+              <option value="monitoring">أجهزة المراقبة والتحكم</option>
+              <option value="alarm">اجهزة انذار السرقة و إنذار الحريق</option>
+              <option value="fire_other">أجهزة إطفاء الحريق</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-2" style="gap:var(--space-3);margin-bottom:var(--space-3);">
+          <div class="form-group">
+            <label class="form-label">السعر (د.أ)</label>
+            <input type="number" id="prodPrice" class="form-control" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">نسبة الخصم (%)</label>
+            <input type="number" id="prodDiscount" class="form-control" step="0.01" value="0" min="0" max="100" />
+          </div>
+        </div>
+        <div class="grid grid-2" style="gap:var(--space-3);margin-bottom:var(--space-3);">
+          <div class="form-group">
+            <label class="form-label">الكمية المتوفرة</label>
+            <input type="number" id="prodStock" class="form-control" value="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">طلب عرض سعر فقط؟</label>
+            <select id="prodRfq" class="form-control">
+              <option value="false">لا</option>
+              <option value="true">نعم</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الوصف التفصيلي</label>
+          <textarea id="prodDesc" class="form-control" rows="3" placeholder="أدخل تفاصيل المنتج..."></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الصور (اختر من جهازك)</label>
+          <input type="file" id="prodImagesFile" class="form-control" accept="image/*" multiple />
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">يمكنك اختيار أكثر من صورة. سيتم رفعها
+            تلقائياً.</div>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الفيديوهات (اختر من جهازك)</label>
+          <input type="file" id="prodVideosFile" class="form-control" accept="video/*" multiple />
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">اختر فيديوهات توضيحية للمنتج إن وجدت.</div>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-4); background: var(--gray-50); padding: var(--space-4); border-radius: var(--radius-md); border: 1px dashed var(--gray-300);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-3);">
+            <label class="form-label" style="margin:0;">الملفات المرفقة (كتالوج، دليل، إلخ)</label>
+            <button type="button" class="btn btn-sm btn-outline" onclick="addDocumentRow()" style="font-size:11px; padding:4px 8px;">+ إضافة ملف</button>
+          </div>
+          <div id="prodDocumentsContainer">
+            <!-- Document rows will be injected here -->
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الشارات (Badges) - مفصولة بفاصلة</label>
+          <input type="text" id="prodBadges" class="form-control" placeholder="جديد, الأكثر مبيعاً" />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-5);">
+          <label class="form-label">المواصفات (Specs) - مفصولة بفاصلة</label>
+          <input type="text" id="prodSpecs" class="form-control" placeholder="4 غازات, IP68" />
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+          <button type="button" class="btn btn-outline" onclick="closeProductModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="prodSaveBtn">حفظ المنتج</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Service Modal -->
+  <div id="serviceModal"
+    style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);">
+      <h3 style="margin-bottom:var(--space-4);font-size:var(--text-xl);font-weight:800;" id="serviceModalTitle">إضافة
+        خدمة جديدة</h3>
+      <form id="serviceForm" onsubmit="saveService(event)">
+        <input type="hidden" id="srvId" />
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">القسم الرئيسي للخدمة</label>
+          <select id="srvCategory" class="form-control" required>
+            <option value="فحوصات بيئة العمل">فحوصات بيئة العمل</option>
+            <option value="الصيانة">الصيانة</option>
+            <option value="التركيبات">التركيبات</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">عنوان الخدمة (عربي)</label>
+          <input type="text" id="srvTitle" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">عنوان الخدمة (إنجليزي - اختياري)</label>
+          <input type="text" id="srvTitleEn" class="form-control" />
+        </div>
+        <div class="grid grid-3" style="gap:var(--space-3);margin-bottom:var(--space-3);">
+          <div class="form-group">
+            <label class="form-label">السعر المبدئي (د.أ)</label>
+            <input type="number" id="srvPrice" class="form-control" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">نسبة الخصم (%)</label>
+            <input type="number" id="srvDiscount" class="form-control" step="0.01" value="0" min="0" max="100" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">لون الأيقونة والخلفية</label>
+            <select id="srvColor" class="form-control">
+              <option value="yellow">أصفر (Yellow)</option>
+              <option value="purple">بنفسجي (Purple)</option>
+              <option value="blue">أزرق (Blue)</option>
+              <option value="red">أحمر (Red)</option>
+              <option value="green">أخضر (Green)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الوصف</label>
+          <textarea id="srvDesc" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-5);">
+          <label class="form-label">المميزات (مفصولة بفاصلة)</label>
+          <textarea id="srvFeatures" class="form-control" rows="3"
+            placeholder="قياس شدة الإضاءة, تقرير مفصل, ..."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+          <button type="button" class="btn btn-outline" onclick="closeServiceModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="srvSaveBtn">حفظ الخدمة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Announcement -->
+  <div id="announcementModal"
+    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);position:relative;">
+      <div style="margin-bottom:var(--space-4);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-size:var(--text-xl);font-weight:800;" id="announcementModalTitle">إضافة إعلان جديد</h3>
+        <button onclick="closeAnnouncementModal()"
+          style="background:none;border:none;cursor:pointer;color:var(--gray-500);"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <form id="announcementForm" onsubmit="saveAnnouncement(event)">
+        <input type="hidden" id="annId" />
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">عنوان الإعلان</label>
+          <input type="text" id="annTitle" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الوصف</label>
+          <textarea id="annDesc" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">صورة الإعلان (اختر من الجهاز)</label>
+          <input type="file" id="annImageFile" class="form-control" accept="image/*" />
+          <input type="hidden" id="annImageUrl" />
+          <img id="annImagePreview"
+            style="max-width:100%;height:auto;margin-top:10px;border-radius:4px;display:none;" />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">رابط التوجيه (URL)</label>
+          <input type="text" id="annLink" class="form-control" required placeholder="مثال: products.html" />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-5);">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+            <input type="checkbox" id="annActive" checked />
+            <span style="font-weight:600;color:var(--dark-800);">تفعيل الإعلان (ظهوره للزوار)</span>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+          <button type="button" class="btn btn-outline" onclick="closeAnnouncementModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="annSaveBtn">حفظ الإعلان</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Feature -->
+  <div id="featureModal"
+    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);position:relative;">
+      <div style="margin-bottom:var(--space-4);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-size:var(--text-xl);font-weight:800;" id="featureModalTitle">إضافة ميزة جديدة</h3>
+        <button onclick="closeFeatureModal()"
+          style="background:none;border:none;cursor:pointer;color:var(--gray-500);"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <form id="featureForm" onsubmit="saveFeature(event)">
+        <input type="hidden" id="featId" />
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الأيقونة (Emoji)</label>
+          <input type="text" id="featIcon" class="form-control" required placeholder="مثال: 🎯" />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">العنوان</label>
+          <input type="text" id="featTitle" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الوصف</label>
+          <textarea id="featDesc" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">اللون</label>
+          <select id="featColor" class="form-control">
+            <option value="blue">أزرق</option>
+            <option value="orange">برتقالي</option>
+            <option value="green">أخضر</option>
+            <option value="purple">بنفسجي</option>
+            <option value="red">أحمر</option>
+            <option value="yellow">أصفر</option>
+          </select>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+          <button type="button" class="btn btn-outline" onclick="closeFeatureModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="featSaveBtn">حفظ الميزة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Home Feature -->
+  <div id="homeFeatureModal"
+    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);position:relative;">
+      <div style="margin-bottom:var(--space-4);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-size:var(--text-xl);font-weight:800;" id="homeFeatureModalTitle">إضافة ميزة رئيسية</h3>
+        <button onclick="closeHomeFeatureModal()"
+          style="background:none;border:none;cursor:pointer;color:var(--gray-500);"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <form id="homeFeatureForm" onsubmit="saveHomeFeature(event)">
+        <input type="hidden" id="homeFeatId" />
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">الترتيب (Display Order)</label>
+          <input type="number" id="homeFeatOrder" class="form-control" required value="0" />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">العنوان</label>
+          <input type="text" id="homeFeatTitle" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">النص الفرعي</label>
+          <input type="text" id="homeFeatSubtitle" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">كود الأيقونة (SVG Tag)</label>
+          <textarea id="homeFeatIcon" class="form-control" rows="3" required placeholder='<svg ...></svg>'></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">اللون (Hex Code)</label>
+          <input type="text" id="homeFeatColor" class="form-control" required placeholder="#1565C0" />
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+          <button type="button" class="btn btn-outline" onclick="closeHomeFeatureModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="homeFeatSaveBtn">حفظ الميزة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Order Details -->
+  <div id="orderDetailsModal"
+    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div
+      style="background:var(--white);padding:var(--space-6);border-radius:var(--radius-xl);width:90%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);position:relative;">
+      <div style="margin-bottom:var(--space-4);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-size:var(--text-xl);font-weight:800;">تفاصيل الطلب <span id="modalOrderId" style="color:var(--primary-600)"></span></h3>
+        <button onclick="document.getElementById('orderDetailsModal').style.display='none'"
+          style="background:none;border:none;cursor:pointer;color:var(--gray-500);"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div id="orderDetailsContent" style="font-size:var(--text-sm); line-height:1.6;">
+        <!-- Details will be loaded here dynamically -->
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:var(--space-3);margin-top:var(--space-5);">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('orderDetailsModal').style.display='none'">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=5"></script>
+  <script src="js/dashboard-supabase.js?v=6"></script>
+  <script>
+    // Section Navigation
+    function showSection(name, clickedLink) {
+      // Hide all sections
+      document.querySelectorAll('[id^="section-"]').forEach(s => s.style.display = 'none');
+      // Show target
+      const target = document.getElementById(`section-${name}`);
+      if (target) target.style.display = '';
+
+      // Handle badge clear logic
+      if (name === 'orders') {
+        const navOB = document.getElementById('nav-badge-orders');
+        if (navOB) {
+          navOB.style.display = 'none';
+          const latestDate = navOB.getAttribute('data-latest-date');
+          if (latestDate) localStorage.setItem('last_seen_order_date', latestDate);
+        }
+      } else if (name === 'rfqs') {
+        const navRB = document.getElementById('nav-badge-rfqs');
+        if (navRB) {
+          navRB.style.display = 'none';
+          const latestDate = navRB.getAttribute('data-latest-date');
+          if (latestDate) localStorage.setItem('last_seen_rfq_date', latestDate);
+        }
+      } else if (name === 'store_settings') {
+        if (typeof loadStoreSettings === 'function') {
+          loadStoreSettings();
+        }
+      }
+
+      // Update active nav
+      if (clickedLink) {
+        document.querySelectorAll('.dash-nav-link').forEach(l => l.classList.remove('active'));
+        clickedLink.classList.add('active');
+      }
+
+      // Update header
+      const titles = {
+        overview: ['لوحة التحكم الرئيسية', 'مرحباً بك! هذه نظرة عامة على أداء متجرك اليوم.'],
+        analytics: ['التقارير والتحليلات', 'تحليل شامل للمبيعات والأداء'],
+        orders: ['إدارة الطلبات', 'عرض وتتبع جميع طلبات العملاء'],
+        rfqs: ['عروض الأسعار RFQ', 'إدارة طلبات عروض الأسعار الواردة'],
+        products: ['إدارة المنتجات', 'إدارة كتالوج المنتجات والمخزون'],
+        announcements: ['إدارة الإعلانات', 'إضافة وتعديل إعلانات لوحة التحكم والواجهة'],
+        services_manage: ['إدارة الخدمات', 'إضافة وتعديل خدمات الفحص البيئي'],
+        features_manage: ['إدارة مميزات الشركة', 'إضافة وتعديل الميزات في صفحة عن الشركة'],
+        inventory: ['إدارة المخزون', 'متابعة الكميات المتوفرة وتنبيهات النقص'],
+        inspections: ['مواعيد الفحص البيئي', 'جدولة وتتبع مواعيد فحص الشركات'],
+        customers: ['إدارة العملاء', 'قاعدة بيانات العملاء المسجلين'],
+        registered_users: ['الحسابات المسجلة', 'إدارة حسابات المستخدمين الذين سجلوا في الموقع'],
+        payments: ['المدفوعات والفواتير', 'متابعة حركات الدفع والفواتير الصادرة'],
+        settings: ['إعدادات النظام', 'إدارة إعدادات المتجر والصلاحيات'],
+      };
+      if (titles[name]) {
+        document.getElementById('dashTitle').textContent = titles[name][0];
+        document.getElementById('dashSubtitle').textContent = titles[name][1];
+      }
+    }
+
+    // Notifications Panel
+    function toggleNotifications() {
+      const panel = document.getElementById('notifPanel');
+      const isOpening = panel.style.display === 'none';
+      panel.style.display = isOpening ? 'block' : 'none';
+
+      if (!isOpening) {
+        if (window._currentNotifs && window._currentNotifs.length > 0) {
+          let seen = JSON.parse(localStorage.getItem('seen_notifs') || '[]');
+          seen = [...new Set([...seen, ...window._currentNotifs])];
+          localStorage.setItem('seen_notifs', JSON.stringify(seen));
+          if (typeof loadDashboardNotifications === 'function') loadDashboardNotifications();
+        }
+      } else {
+        const badge = document.getElementById('notif-count-badge');
+        if (badge) badge.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      // Close notifications panel
+      if (!e.target.closest('.dashboard-header-actions')) {
+        const panel = document.getElementById('notifPanel');
+        if (panel && panel.style.display === 'block') toggleNotifications();
+      }
+      
+      // Close any modal if clicked on its overlay
+      if (e.target.id && e.target.id.endsWith('Modal') && e.target.style.display !== 'none') {
+        e.target.style.display = 'none';
+      }
+    });
+
+    // Toast function
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const icons = {
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      };
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<div class="toast-icon">${icons[type] || icons.success}</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-msg">${message}</div></div>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    // Clock removed
+
+    // Charts will be initialized dynamically by dashboard-supabase.js
+  </script>
+</body>
+
+</html>

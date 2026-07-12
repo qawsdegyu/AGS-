@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حسابي | AGS Technology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--space-6);
+      margin: var(--space-8) 0;
+    }
+    .profile-sidebar {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      position: sticky;
+      top: 100px;
+    }
+    .profile-user-info {
+      text-align: center;
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: var(--space-4);
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0 auto var(--space-3);
+    }
+    .profile-name {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--dark-800);
+    }
+    .profile-email {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+    .profile-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .profile-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      color: var(--gray-600);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+    .profile-nav-item:hover {
+      background: var(--gray-50);
+      color: var(--primary-600);
+    }
+    .profile-nav-item.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+    }
+    .profile-section {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      display: none;
+    }
+    .profile-section.active {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
+    .profile-section-title {
+      font-size: var(--text-xl);
+      font-weight: 800;
+      color: var(--dark-800);
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    @media (max-width: 768px) {
+      .profile-layout {
+        grid-template-columns: 1fr;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .history-card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status-pending { background: #FFF3E0; color: #E65100; }
+    .status-processing { background: #E3F2FD; color: #1565C0; }
+    .status-completed { background: #E8F5E9; color: #2E7D32; }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="navbar" id="navbar">
+    <div class="container-fluid" style="padding: 0 var(--space-6);">
+      <div class="navbar-inner" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <!-- Right Side (Logo + Links) -->
+        <div style="display: flex; align-items: center; gap: 2rem;">
+          <!-- Logo -->
+          <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+            <img src="logo.png?v=5" alt="AGS Technology Logo" style="height: 100px; width: auto; object-fit: contain; transform: scale(1.6); transform-origin: right center;">
+          </a>
+
+          <!-- Nav Menu -->
+          <ul class="nav-menu" id="navMenu" style="display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; align-items: center;">
+            <li class="nav-item">
+              <a href="index.html" class="nav-link">الرئيسية</a>
+            </li>
+            <li class="nav-item">
+              <a href="products.html" class="nav-link">المنتجات</a>
+            </li>
+            <li class="nav-item">
+              <a href="services.html" class="nav-link">الخدمات</a>
+            </li>
+            <li class="nav-item">
+              <a href="rfq.html" class="nav-link">طلب عرض سعر</a>
+            </li>
+            <li class="nav-item">
+              <a href="about.html" class="nav-link">عن الشركة</a>
+            </li>
+            <li class="nav-item">
+              <a href="contact.html" class="nav-link">تواصل</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Left Side (Search + Cart + Settings + Mobile Toggle) -->
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <!-- Search Bar -->
+          <div class="search-bar-wrapper" style="position: relative; display: flex; align-items: center;">
+            <input type="text" id="navbarSearchInput" placeholder="ابحث عن أجهزة القياس والفحص..." style="height: 44px; border-radius: 22px; border: 1px solid #e2e8f0; padding: 0 16px 0 44px; width: 280px; font-family: inherit; font-size: 14px; outline: none; background: #f8fafc;" oninput="const s=document.getElementById('searchInput'); if(s){ s.value=this.value; if(typeof runFilters==='function') runFilters(); } else { clearTimeout(window.searchT); window.searchT = setTimeout(()=>{window.location.href='products.html?q='+encodeURIComponent(this.value);}, 600); }">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="position: absolute; left: 14px; color: #94a3b8; cursor:pointer;" onclick="if(document.getElementById('navbarSearchInput').value) { window.location.href='products.html?q=' + encodeURIComponent(document.getElementById('navbarSearchInput').value); }">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+
+          <!-- Actions -->
+          <div class="nav-actions" style="display: flex; align-items: center; gap: 8px;">
+            <!-- Cart -->
+            <a href="#" class="nav-action-btn" id="cartBtn" title="سلة التسوق" style="width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; position: relative; color: #4b5563; text-decoration: none; transition: background 0.2s;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+              </svg>
+              <span class="cart-count" id="cartCount" style="position: absolute; top: -4px; right: -4px; background: #f97316; color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">0</span>
+            </a>
+
+            <!-- Settings -->
+            <div class="nav-item" id="nav-settings">
+              <button class="nav-action-btn" title="الإعدادات" style="width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; border: none; display: flex; align-items: center; justify-content: center; color: #4b5563; cursor: pointer; transition: background 0.2s;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+              </button>
+              <div class="dropdown" style="left:0; right:auto;">
+                <div style="padding:var(--space-2) var(--space-4); border-bottom:1px solid var(--gray-200); margin-bottom:var(--space-2);">
+                  <div style="font-weight:700; color:var(--dark-800);">الإعدادات</div>
+                  <div style="font-size:11px; color:var(--gray-500);">تحكم في حسابك وإعدادات الموقع</div>
+                </div>
+                <a href="profile.html" class="dropdown-item" id="nav-account" style="display: none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  حسابي
+                </a>
+                <a href="login.html" class="dropdown-item" id="nav-login-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                  تسجيل الدخول
+                </a>
+                <div id="admin-divider" style="display:none; height:1px; background:var(--gray-200); margin:var(--space-2) 0;"></div>
+                <a href="dashboard.html" class="dropdown-item" id="admin-dashboard-link" style="display:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                  لوحة التحكم الإدارية
+                </a>
+                <a href="#" onclick="if(window.supabaseClient) { window.supabaseClient.auth.signOut().then(() => window.location.reload()); } event.preventDefault();" class="dropdown-item" id="nav-logout-btn" style="color:var(--danger); display:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  تسجيل الخروج
+                </a>
+              </div>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="menu-toggle" id="menuToggle" onclick="toggleMobileMenu()" aria-label="فتح قائمة التنقل" aria-expanded="false" aria-controls="navMenu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+<!-- Search Bar -->
+<div id="searchBar" style="display:none; background:var(--white); border-bottom:1px solid var(--gray-200); padding:var(--space-4) 0; position:sticky; top:var(--nav-height); z-index:var(--z-dropdown);">
+  <div class="container">
+    <div style="position:relative; max-width:700px; margin:0 auto;">
+      <input type="text" class="form-control" placeholder="ابحث عن منتج أو خدمة... (مثال: جهاز قياس الغاز، طفاية حريق...)" style="padding-right:var(--space-12); font-size:var(--text-lg);" id="searchInput" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" style="position:absolute; right:var(--space-4); top:50%; transform:translateY(-50%); width:22px; height:22px;">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header" style="background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-900) 100%); padding: 4rem 0;">
+  <div class="container">
+    <div class="page-header-content" style="text-align: right; color: white;">
+      <h1 class="page-header-title" style="color: white; font-size: 2.5rem; margin-bottom: 0.5rem;">حسابي</h1>
+      <p class="page-header-desc" style="color: rgba(255,255,255,0.8); font-size: 1.1rem; max-width: 600px;">إدارة تفضيلات حسابك، معلوماتك الشخصية، وسجل طلباتك بكل سهولة وأمان</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="profile-layout">
+    <!-- Sidebar -->
+    <aside class="profile-sidebar">
+      <div class="profile-user-info">
+        <div class="profile-avatar" id="profileAvatar">م</div>
+        <div class="profile-name" id="profileNameDisplay">مستخدم AGS</div>
+        <div class="profile-email" id="profileEmailDisplay">user@example.com</div>
+      </div>
+      <ul class="profile-nav">
+        <li class="profile-nav-item active" onclick="switchProfileTab('info', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          المعلومات الشخصية
+        </li>
+        <li class="profile-nav-item" onclick="switchProfileTab('security', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          تغيير كلمة المرور
+        </li>
+        <li class="profile-nav-item" onclick="switchProfileTab('orders', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          طلبات المتجر (Orders)
+        </li>
+        <li class="profile-nav-item" onclick="switchProfileTab('history', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          سجل الطلبات (RFQs)
+        </li>
+        <li class="profile-nav-item" onclick="logoutUser(event)" style="color: var(--danger); margin-top: var(--space-4);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          تسجيل الخروج
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="profile-content">
+      
+      <!-- Info Tab -->
+      <div class="profile-section active" id="tab-info">
+        <h2 class="profile-section-title">المعلومات الشخصية</h2>
+        <form id="profileInfoForm" onsubmit="updateProfileInfo(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">الاسم الكامل</label>
+              <input type="text" id="profFullName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">رقم الهاتف</label>
+              <input type="text" id="profPhone" class="form-control" placeholder="+962 7X XXX XXXX" dir="ltr" style="text-align: right;">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">البريد الإلكتروني <span style="color:var(--gray-400); font-size:12px; font-weight:normal;">(غير قابل للتعديل حالياً)</span></label>
+              <input type="email" id="profEmail" class="form-control" disabled style="background:var(--gray-50); cursor:not-allowed;">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnUpdateProfile" style="margin-top:var(--space-4);">حفظ التغييرات</button>
+        </form>
+      </div>
+
+      <!-- Security Tab -->
+      <div class="profile-section" id="tab-security">
+        <h2 class="profile-section-title">إعدادات الأمان</h2>
+        <form id="profileSecurityForm" onsubmit="updatePassword(event)">
+          <div class="form-group">
+            <label class="form-label">كلمة المرور الجديدة</label>
+            <input type="password" id="profNewPass" class="form-control" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+            <input type="password" id="profConfirmPass" class="form-control" minlength="6" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnUpdatePass" style="margin-top:var(--space-2);">تحديث كلمة المرور</button>
+        </form>
+      </div>
+
+      <!-- Orders Tab -->
+      <div class="profile-section" id="tab-orders">
+        <h2 class="profile-section-title">سجل طلبات المتجر</h2>
+        <div id="ordersHistoryContainer">
+          <div style="text-align:center; padding: 2rem; color:var(--gray-500);">
+            <div style="display:inline-block;width:30px;height:30px;border:3px solid var(--primary-600);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+            <div>جاري تحميل الطلبات...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div class="profile-section" id="tab-history">
+        <h2 class="profile-section-title">سجل طلبات عروض الأسعار (RFQs)</h2>
+        <div id="rfqHistoryContainer">
+          <div style="text-align:center; padding: 2rem; color:var(--gray-500);">
+            <div style="display:inline-block;width:30px;height:30px;border:3px solid var(--primary-600);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+            <div>جاري تحميل السجل...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- About -->
+      <div class="footer-about">
+        <div class="footer-logo">
+          <a href="index.html" class="logo" style="text-decoration: none; display: inline-block;">
+            <img src="logof.png" alt="AGS Technology Logo" style="height: 100px; width: auto; object-fit: contain; transform: scale(1.1); transform-origin: right center; border-radius: 12px;">
+          </a>
+        </div>
+        <p class="footer-desc">
+          AGS Technology هي شركة رائدة في توريد وتوزيع أجهزة السلامة والفحص والقياس للشركات والمؤسسات. نقدم حلولاً متكاملة تضمن بيئة عمل آمنة ومتوافقة مع المعايير الدولية.
+        </p>
+        <div class="footer-social">
+          <a href="https://www.linkedin.com/in/osama-salhoot-0244a616?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="social-btn" title="LinkedIn" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://www.facebook.com/AGStecnology?mibextid=ZbWKwL" class="social-btn" title="Facebook" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/salhout?igsh=eTJpZ203aDEydmdz" class="social-btn" title="Instagram" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href="https://www.threads.com/@salhout" class="social-btn" title="Threads" target="_blank" style="font-weight:900; font-family:sans-serif; font-size:16px;">
+            @
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <div class="footer-col-title">روابط سريعة</div>
+        <div class="footer-links">
+          <a href="index.html" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            الصفحة الرئيسية
+          </a>
+          <a href="products.html" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            كتالوج المنتجات
+          </a>
+          <a href="services.html" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            خدمات الفحص البيئي
+          </a>
+          <a href="rfq.html" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            طلب عرض سعر
+          </a>
+          <a href="faq.html" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            الأسئلة الشائعة
+          </a>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div>
+        <div class="footer-col-title">فئات المنتجات</div>
+        <div class="footer-links">
+          <a href="products.html?cat=measurement" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            أجهزة الفحص والقياس
+          </a>
+          <a href="products.html?cat=gas" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            أجهزة قياس الغازات
+          </a>
+          <a href="products.html?cat=safety" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            معدات السلامة الشخصية
+          </a>
+          <a href="products.html?cat=fire" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            أنظمة إنذار الحريق
+          </a>
+          <a href="products.html?cat=ppe" class="footer-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            معدات PPE
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <div class="footer-col-title">تواصل معنا</div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="footer-contact-text">
+            <div class="footer-contact-label">العنوان</div>
+            <div class="footer-contact-value">عين الباشا شارع السلط خلف كازية توتال</div>
+          </div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
+            </svg>
+          </div>
+          <div class="footer-contact-text">
+            <div class="footer-contact-label">الهاتف</div>
+            <div class="footer-contact-value">0786776057 - 0791852909</div>
+          </div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="footer-contact-text">
+            <div class="footer-contact-label">البريد الإلكتروني</div>
+            <div class="footer-contact-value">info@agsco.shop</div>
+          </div>
+        </div>
+        <div style="margin-top:var(--space-4);">
+          <a href="https://wa.me/962786776057" class="btn btn-accent btn-sm" target="_blank" style="width:100%;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          تواصل عبر واتساب
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      <p>شركة الدقة للسلامة العامة AGS company 2018AGS co.</p>
+    </div>
+    <div class="footer-certs">
+      <span class="cert-badge">SSL Secured</span>
+      <span class="cert-badge">PCI-DSS</span>
+      <span class="cert-badge">ISO 27001</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp Float -->
+<div class="whatsapp-float">
+  <span class="whatsapp-tooltip">تواصل معنا عبر واتساب</span>
+  <a href="https://wa.me/962786776057" class="whatsapp-btn" target="_blank">
+    <div class="whatsapp-pulse"></div>
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+760:     </svg>
+  </a>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Cart Drawer -->
+<div id="cartDrawer" style="position:fixed;top:0;left:-420px;width:400px;height:100vh;background:var(--white);z-index:var(--z-modal);box-shadow:var(--shadow-xl);transition:left var(--transition-base);overflow-y:auto;display:flex;flex-direction:column;">
+  <div style="padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;">
+    <h3 style="font-size:var(--text-xl);font-weight:800;color:var(--dark-800);" id="cartDrawerTitle">سلة التسوق (0)</h3>
+    <button onclick="toggleCart()" style="width:36px;height:36px;border-radius:var(--radius-full);background:var(--gray-100);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div style="flex:1;padding:var(--space-5) var(--space-6);overflow-y:auto;" id="cartItemsContainer">
+    <!-- Cart Items -->
+    <div style="text-align:center;color:var(--gray-500);padding:var(--space-6);">السلة فارغة</div>
+  </div>
+  <div style="padding:var(--space-5) var(--space-6);border-top:1px solid var(--gray-200);">
+    <div style="display:flex;justify-content:space-between;font-weight:800;font-size:var(--text-xl);color:var(--dark-800);margin-bottom:var(--space-4);">
+      <span>الإجمالي:</span>
+      <span style="color:var(--primary-700);" id="cartDrawerTotal">0 د.أ</span>
+    </div>
+    <a href="#" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="checkoutCart(event)">
+      إتمام الطلب
+    </a>
+    <a href="rfq.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:var(--space-2);">
+      تحويل لعرض سعر
+    </a>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/main.js"></script>
+<script>
+  let currentUserData = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (typeof supabase === 'undefined') {
+      if (window.supabaseClient) window.supabase = window.supabaseClient;
+    }
+    if (!window.supabaseClient) return;
+
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    
+    if (!session) {
+      window.location.replace('login.html');
+      return;
+    }
+    
+    // Initial UI load
+    const user = session.user;
+    currentUserData = user;
+    
+    document.getElementById('profEmail').value = user.email;
+    document.getElementById('profileEmailDisplay').textContent = user.email;
+    
+    const meta = user.user_metadata || {};
+    if (meta.full_name) {
+      document.getElementById('profFullName').value = meta.full_name;
+      document.getElementById('profileNameDisplay').textContent = meta.full_name;
+      document.getElementById('profileAvatar').textContent = meta.full_name.charAt(0).toUpperCase();
+    } else {
+      document.getElementById('profileAvatar').textContent = user.email.charAt(0).toUpperCase();
+    }
+    if (meta.phone) {
+      document.getElementById('profPhone').value = meta.phone;
+    }
+    
+    // Check if they are admin to show link
+    const { data: adminData } = await window.supabaseClient.from('admin_users').select('*').eq('email', user.email).single();
+    if (adminData) {
+      const adminLink = document.getElementById('admin-dashboard-link');
+      const adminDiv = document.getElementById('admin-divider');
+      if (adminLink) adminLink.style.display = 'flex';
+      if (adminDiv) adminDiv.style.display = 'block';
+    }
+    
+    // Ensure logout and account are correct
+    const loginBtn = document.getElementById('nav-login-btn');
+    const accBtn = document.getElementById('nav-account');
+    const outBtn = document.getElementById('nav-logout-btn');
+    if(loginBtn) loginBtn.style.display = 'none';
+    if(accBtn) accBtn.style.display = 'flex';
+    if(outBtn) outBtn.style.display = 'flex';
+
+    loadRfqHistory(user.email);
+    loadOrdersHistory(user.email);
+  });
+
+  function switchProfileTab(tabId, btn) {
+    document.querySelectorAll('.profile-nav-item').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.profile-section').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+  }
+
+  async function updateProfileInfo(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnUpdateProfile');
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري الحفظ...';
+    
+    try {
+      const newName = document.getElementById('profFullName').value;
+      const newPhone = document.getElementById('profPhone').value;
+      
+      const { data, error } = await window.supabaseClient.auth.updateUser({
+        data: { full_name: newName, phone: newPhone }
+      });
+      
+      if (error) throw error;
+      
+      showToast('تم بنجاح', 'تم تحديث البيانات الشخصية', 'success');
+      document.getElementById('profileNameDisplay').textContent = newName || currentUserData.email;
+      document.getElementById('profileAvatar').textContent = (newName || currentUserData.email).charAt(0).toUpperCase();
+      
+    } catch (err) {
+      showToast('خطأ', err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'حفظ التغييرات';
+    }
+  }
+
+  async function updatePassword(e) {
+    e.preventDefault();
+    const pass = document.getElementById('profNewPass').value;
+    const confirm = document.getElementById('profConfirmPass').value;
+    
+    if (pass !== confirm) {
+      showToast('خطأ', 'كلمتا المرور غير متطابقتين', 'error');
+      return;
+    }
+    
+    const btn = document.getElementById('btnUpdatePass');
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري التحديث...';
+    
+    try {
+      const { error } = await window.supabaseClient.auth.updateUser({ password: pass });
+      if (error) throw error;
+      showToast('تم بنجاح', 'تم تغيير كلمة المرور بنجاح. قد تحتاج لتسجيل الدخول مرة أخرى', 'success');
+      document.getElementById('profileSecurityForm').reset();
+    } catch (err) {
+      showToast('خطأ', err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'تحديث كلمة المرور';
+    }
+  }
+
+  async function loadRfqHistory(email) {
+    const container = document.getElementById('rfqHistoryContainer');
+    try {
+      const { data, error } = await window.supabaseClient.from('rfqs').select('*').eq('email', email).order('created_at', { ascending: false });
+      if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500);font-weight:600;">لا توجد طلبات عروض أسعار سابقة</div>';
+        return;
+      }
+      
+      container.innerHTML = data.map(rfq => {
+        let statusClass = 'status-pending';
+        if (rfq.status === 'موافقة' || rfq.status === 'مكتمل') statusClass = 'status-completed';
+        if (rfq.status === 'أُرسل' || rfq.status === 'معالجة') statusClass = 'status-processing';
+        
+        return `
+          <div class="history-card">
+            <div>
+              <div style="font-weight:700;margin-bottom:4px;color:var(--primary-700);">طلب عرض سعر <span style="font-size:11px;color:var(--gray-400);">#${rfq.id.substring(0,8)}</span></div>
+              <div style="font-size:12px;color:var(--gray-500);">تاريخ الطلب: ${new Date(rfq.created_at).toLocaleDateString('ar-JO')}</div>
+            </div>
+            <div>
+              <span class="history-status ${statusClass}">${rfq.status || 'انتظار'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+    } catch (err) {
+      container.innerHTML = `<div style="text-align:center;padding:2rem;color:red;">خطأ في تحميل السجل: ${err.message}</div>`;
+    }
+  }
+
+  async function loadOrdersHistory(email) {
+    const container = document.getElementById('ordersHistoryContainer');
+    try {
+      // The orders table uses customer_email, not user_id.
+      const { data, error } = await window.supabaseClient.from('orders').select('*').eq('customer_email', email).order('created_at', { ascending: false });
+      
+      // Fallback if user_id is not set: try matching email? The checkout didn't save email into orders table directly unless it's in metadata or customer_phone?
+      // Wait, there's no email in orders. But user_id is saved!
+      
+      if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500);font-weight:600;">لا توجد طلبات متجر سابقة</div>';
+        return;
+      }
+      
+      container.innerHTML = data.map(order => {
+        let statusClass = 'status-pending';
+        if (order.status === 'مكتمل' || order.status === 'تم التسليم') statusClass = 'status-completed';
+        if (order.status === 'تم الشحن' || order.status === 'قيد المعالجة') statusClass = 'status-processing';
+        
+        const canCancel = (order.status === 'بانتظار التأكيد' || order.status === 'قيد المراجعة' || order.status === 'قيد المعالجة');
+
+        return `
+          <div class="history-card" style="flex-direction:column; align-items:flex-start; gap:8px;">
+            <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700;margin-bottom:4px;color:var(--primary-700);">طلب منتجات <span style="font-size:11px;color:var(--gray-400);">#${order.id.substring(0,8)}</span></div>
+                <div style="font-size:12px;color:var(--gray-500);">تاريخ الطلب: ${new Date(order.created_at).toLocaleDateString('ar-JO')}</div>
+                <div style="font-size:13px;font-weight:bold;margin-top:4px;">الإجمالي: ${parseFloat(order.total_amount).toLocaleString('en-US')} د.أ</div>
+              </div>
+              <div style="text-align:left;">
+                <div style="margin-bottom:8px;"><span class="history-status ${statusClass}">${order.status || 'بانتظار التأكيد'}</span></div>
+                ${canCancel ? `<button class="btn" style="background:transparent;border:1px solid var(--danger);color:var(--danger);font-size:11px;padding:4px 8px;" onclick="cancelOrder('${order.id}')">إلغاء الطلب</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+    } catch (err) {
+      container.innerHTML = `<div style="text-align:center;padding:2rem;color:red;">خطأ في تحميل السجل: ${err.message}</div>`;
+    }
+  }
+
+  async function cancelOrder(id) {
+    if(!confirm('هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ لا يمكن التراجع عن هذه الخطوة.')) return;
+    try {
+      const { error } = await window.supabaseClient.from('orders').update({ status: 'ملغي' }).eq('id', id);
+      if (error) throw error;
+      showToast('تم بنجاح', 'تم إلغاء الطلب بنجاح', 'success');
+      loadOrdersHistory(currentUserData.email);
+    } catch (err) {
+      showToast('خطأ', err.message, 'error');
+    }
+  }
+
+  async function logoutUser(e) {
+    e.preventDefault();
+    if (window.supabaseClient) {
+      await window.supabaseClient.auth.signOut();
+      window.location.replace('login.html');
+    }
+  }
+</script>
+
+</body>
+</html>

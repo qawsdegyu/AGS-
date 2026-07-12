@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Disallow access to dashboard and admin pages
+Disallow: /dashboard.html
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /forgot-password.html
+Disallow: /reset-password.html
+Disallow: /profile.html
+Disallow: /checkout.html
+
+# Sitemap location (update with your actual domain later)
+Sitemap: https://www.ags-safety.com/sitemap.xml
