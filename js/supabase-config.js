@@ -387,3 +387,37 @@ function resetAdInterval() {
     if (adInterval) clearInterval(adInterval);
     adInterval = setInterval(nextAd, 5000); // Change every 5 seconds
 }
+
+async function loadDynamicLogos() {
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient.from('store_settings').select('*').in('key', ['navbar_logo', 'footer_logo']);
+        if (error) throw error;
+        if (!data || data.length === 0) return;
+
+        const navLogo = data.find(s => s.key === 'navbar_logo')?.text_value;
+        const footerLogo = data.find(s => s.key === 'footer_logo')?.text_value;
+
+        if (navLogo) {
+            document.querySelectorAll('img').forEach(img => {
+                if (img.src && img.src.includes('logo.png')) {
+                    img.src = navLogo;
+                }
+            });
+        }
+
+        if (footerLogo) {
+            document.querySelectorAll('img').forEach(img => {
+                if (img.src && img.src.includes('logof.png')) {
+                    img.src = footerLogo;
+                }
+            });
+        }
+    } catch (err) {
+        console.error('Error loading dynamic logos:', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadDynamicLogos();
+});

@@ -2168,6 +2168,7 @@ window.saveStoreSettings = async function() {
     } catch (err) {
         console.error(err);
         showToast('خطأ', 'تعذر حفظ الإعدادات: ' + err.message, 'error');
+        alert('تعذر حفظ الإعدادات بسبب الخطأ التالي:\n' + err.message + '\n\nيرجى التأكد من تشغيل ملف setup_site_settings.sql في Supabase!');
     } finally {
         btn.disabled = false;
         btn.textContent = 'حفظ الإعدادات';
