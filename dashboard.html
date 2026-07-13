@@ -897,7 +897,7 @@
                 <div style="margin-bottom:var(--space-3); text-align:center; background:var(--white); padding:var(--space-2); border-radius:var(--radius-md); border:1px dashed var(--gray-300);">
                   <img id="previewNavbarLogo" src="logo.png" style="max-height:60px; max-width:100%; object-fit:contain;" alt="Navbar Logo Preview">
                 </div>
-                <input type="file" id="settingNavbarLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" />
+                <input type="file" id="settingNavbarLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" onchange="if(this.files[0]) document.getElementById('previewNavbarLogo').src = URL.createObjectURL(this.files[0])" />
                 <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">
                   أفضل مقاس: ارتفاع 40-60 بكسل. سيتم استبدال الشعار في أعلى جميع الصفحات.
                 </div>
@@ -908,7 +908,7 @@
                 <div style="margin-bottom:var(--space-3); text-align:center; background:rgba(255,255,255,0.05); padding:var(--space-2); border-radius:var(--radius-md); border:1px dashed rgba(255,255,255,0.2);">
                   <img id="previewFooterLogo" src="logof.png" style="max-height:80px; max-width:100%; object-fit:contain;" alt="Footer Logo Preview">
                 </div>
-                <input type="file" id="settingFooterLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" style="background:var(--white); color:var(--dark-800);" />
+                <input type="file" id="settingFooterLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" style="background:var(--white); color:var(--dark-800);" onchange="if(this.files[0]) document.getElementById('previewFooterLogo').src = URL.createObjectURL(this.files[0])" />
                 <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:8px;">
                   أفضل مقاس: ارتفاع 80-100 بكسل. يفضل استخدام صورة بخلفية شفافة (PNG/SVG) لتبدو مناسبة مع الخلفية الداكنة للفوتر.
                 </div>
@@ -1305,8 +1305,8 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=5"></script>
-  <script src="js/dashboard-supabase.js?v=6"></script>
+  <script src="js/supabase-config.js?v=6"></script>
+  <script src="js/dashboard-supabase.js?v=7"></script>
   <script>
     // Section Navigation
     function showSection(name, clickedLink) {
