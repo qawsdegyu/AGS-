@@ -732,6 +732,14 @@
         }
       }
       runFilters();
+      
+      // إغلاق الفلاتر تلقائياً على الموبايل بعد الاختيار
+      if (window.innerWidth <= 768) {
+        document.querySelectorAll('.filter-title.open').forEach(t => {
+          t.classList.remove('open');
+          if (t.nextElementSibling) t.nextElementSibling.style.display = 'none';
+        });
+      }
     }
 
     function quickFilter(type, btn) {
