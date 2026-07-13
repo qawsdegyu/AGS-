@@ -614,12 +614,12 @@
               </div>
               <div class="form-group">
                 <label>المنطقة / الحي <span class="req">*</span></label>
-                <input type="text" id="deliveryArea" class="form-control" placeholder="مثال: صويلح، حي الإرسال" required oninput="checkProgress()">
+                <input type="text" id="deliveryArea" class="form-control" placeholder="مثال: صويلح، حي الإرسال" required oninput="checkProgress(); refreshSubmitButton()">
               </div>
             </div>
             <div class="form-group">
               <label>العنوان التفصيلي <span class="req">*</span></label>
-              <input type="text" id="deliveryAddress" class="form-control" placeholder="اسم الشارع، رقم المبنى، الطابق" required oninput="checkProgress()">
+              <input type="text" id="deliveryAddress" class="form-control" placeholder="اسم الشارع، رقم المبنى، الطابق" required oninput="checkProgress(); refreshSubmitButton()">
             </div>
             <button type="button" class="btn-place-order" style="margin-top: 10px; width: 100%; box-shadow: none; font-size: 14px;" onclick="toggleSection('payment')" id="btn-next-payment">متابعة إلى الدفع ↓</button>
           </div>
@@ -1107,6 +1107,9 @@
       } else if (!city) {
         b.disabled = true;
         bt.textContent = 'اختر المحافظة أولاً';
+      } else if (!document.getElementById('deliveryAddress')?.value.trim()) {
+        b.disabled = true;
+        bt.textContent = 'الرجاء إدخال العنوان التفصيلي';
       } else if (!paymentMethod) {
         b.disabled = true;
         bt.textContent = 'اختر طريقة الدفع أولاً';
@@ -1140,8 +1143,18 @@
     document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const name = document.getElementById('customerName').value.trim();
+      if (!name) { alert('يرجى إدخال الاسم الكامل'); return; }
+
+      const phone = document.getElementById('customerPhone').value.trim();
+      if (!phone) { alert('يرجى إدخال رقم الهاتف'); return; }
+
       const city = document.getElementById('deliveryCity').value;
       if (!city) { alert('يرجى اختيار المحافظة'); return; }
+
+      const address = document.getElementById('deliveryAddress').value.trim();
+      if (!address) { alert('يرجى إدخال العنوان التفصيلي'); return; }
+
       if (baseSubtotal <= 0) { alert('خطأ: مجموع الطلب يساوي صفر. يرجى إعادة المحاولة.'); return; }
 
       const b = btn();
@@ -1149,12 +1162,9 @@
       b.disabled = true;
       btnText().textContent = '⏳ جاري إرسال الطلب...';
 
-      const name = document.getElementById('customerName').value.trim();
-      const phone = document.getElementById('customerPhone').value.trim();
       const email = document.getElementById('customerEmail').value.trim();
       const company = document.getElementById('customerCompany').value.trim();
       const area = document.getElementById('deliveryArea')?.value.trim() || '';
-      const address = document.getElementById('deliveryAddress').value.trim();
       const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
       let fee = city === 'عمان' ? 2.00 : 3.00;
       if (baseSubtotal > 100) fee = 0;

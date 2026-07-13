@@ -2095,15 +2095,31 @@ window.loadStoreSettings = async function() {
         if (error) throw error;
         
         let discount = 0;
+        let navbarLogoUrl = '';
+        let footerLogoUrl = '';
+
         if (data) {
             const setting = data.find(s => s.key === 'first_order_discount');
-            if (setting) {
-                discount = setting.value;
-            }
+            if (setting) discount = setting.value;
+
+            const navSetting = data.find(s => s.key === 'navbar_logo');
+            if (navSetting && navSetting.text_value) navbarLogoUrl = navSetting.text_value;
+
+            const footerSetting = data.find(s => s.key === 'footer_logo');
+            if (footerSetting && footerSetting.text_value) footerLogoUrl = footerSetting.text_value;
         }
+        
         const inputField = document.getElementById('settingFirstOrderDiscount');
-        if (inputField) {
-             inputField.value = discount;
+        if (inputField) inputField.value = discount;
+
+        if (navbarLogoUrl) {
+            const previewNav = document.getElementById('previewNavbarLogo');
+            if (previewNav) previewNav.src = navbarLogoUrl;
+        }
+
+        if (footerLogoUrl) {
+            const previewFoot = document.getElementById('previewFooterLogo');
+            if (previewFoot) previewFoot.src = footerLogoUrl;
         }
     } catch (err) {
         console.error('Error loading settings:', err);
@@ -2119,19 +2135,46 @@ window.saveStoreSettings = async function() {
     try {
         const discountVal = parseFloat(document.getElementById('settingFirstOrderDiscount').value) || 0;
         
-        const { error } = await supabase.from('store_settings').upsert({
-            key: 'first_order_discount',
-            value: discountVal
-        }, { onConflict: 'key' });
+        const updates = [
+            { key: 'first_order_discount', value: discountVal }
+        ];
+
+        // Handle image uploads
+        const navFile = document.getElementById('settingNavbarLogoFile')?.files[0];
+        const footerFile = document.getElementById('settingFooterLogoFile')?.files[0];
+
+        if (navFile) {
+            const urls = await uploadMediaFiles([navFile]);
+            if (urls && urls.length > 0) {
+                updates.push({ key: 'navbar_logo', text_value: urls[0] });
+                document.getElementById('previewNavbarLogo').src = urls[0];
+            }
+        }
+
+        if (footerFile) {
+            const urls = await uploadMediaFiles([footerFile]);
+            if (urls && urls.length > 0) {
+                updates.push({ key: 'footer_logo', text_value: urls[0] });
+                document.getElementById('previewFooterLogo').src = urls[0];
+            }
+        }
         
-        if (error) throw error;
-        showToast('تم بنجاح', 'تم حفظ الإعدادات بنجاح', 'success');
+        for (const update of updates) {
+            const { error } = await supabase.from('store_settings').upsert(update, { onConflict: 'key' });
+            if (error) throw error;
+        }
+        
+        showToast('تم بنجاح', 'تم حفظ الإعدادات بنجاح. قد تحتاج لتحديث الصفحة لرؤية الشعارات الجديدة.', 'success');
     } catch (err) {
         console.error(err);
         showToast('خطأ', 'تعذر حفظ الإعدادات: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.textContent = 'حفظ الإعدادات';
+        
+        // Clear file inputs after successful save
+        if(document.getElementById('settingNavbarLogoFile')) document.getElementById('settingNavbarLogoFile').value = '';
+        if(document.getElementById('settingFooterLogoFile')) document.getElementById('settingFooterLogoFile').value = '';
     }
 };
 // --- INSPECTIONS -------------------------------------------------------------

@@ -50,11 +50,19 @@
       border: 1px solid #E2E8F0;
     }
 
-    .main-image img,
-    .main-image iframe {
+    .main-image img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+    }
+
+    .main-image iframe {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100%;
+      border: none;
+      display: block;
+      margin: 0;
     }
 
     .thumbnails {
@@ -249,6 +257,46 @@
         font-size: 1rem;
         width: 100% !important;
       }
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding: 2rem;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+      transition: color 0.3s;
+    }
+    .lightbox-close:hover {
+      color: #FF6B00;
+    }
+    .main-image img {
+      cursor: zoom-in;
     }
   </style>
 </head>
@@ -467,7 +515,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
-              خدمات الفحص البيئي
+              خدمات الشركة
             </a>
             <a href="rfq.html" class="footer-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -494,12 +542,7 @@
               </svg>
               أجهزة الفحص والقياس
             </a>
-            <a href="products.html?cat=gas" class="footer-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              أجهزة قياس الغازات
-            </a>
+
             <a href="products.html?cat=safety" class="footer-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6" />
@@ -512,12 +555,7 @@
               </svg>
               أنظمة إنذار الحريق
             </a>
-            <a href="products.html?cat=ppe" class="footer-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              معدات PPE
-            </a>
+
           </div>
         </div>
 
@@ -639,6 +677,11 @@
 
   <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
+  <!-- Lightbox -->
+  <div id="imageLightbox" class="lightbox" onclick="closeLightbox(event)">
+    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+    <img class="lightbox-content" id="lightboxImg">
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -701,7 +744,7 @@
 
       if (media.length > 0) {
         mainMediaHtml = media[0].type === 'image'
-          ? `<img src="${media[0].url}" alt="${product.title}">`
+          ? `<img src="${media[0].url}" alt="${product.title}" onclick="openLightbox()">`
           : `<iframe src="${media[0].url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
         thumbnailsHtml = media.map((item, index) => {
@@ -809,7 +852,7 @@
       const container = document.getElementById('mainMediaContainer');
 
       if (item.type === 'image') {
-        container.innerHTML = `<img src="${item.url}" alt="Product Image">`;
+        container.innerHTML = `<img src="${item.url}" alt="Product Image" onclick="openLightbox()">`;
       } else {
         container.innerHTML = `<iframe src="${item.url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
       }
@@ -819,6 +862,22 @@
       thumbs.forEach(t => t.classList.remove('active'));
       if (thumbs[index]) thumbs[index].classList.add('active');
     };
+
+    function openLightbox() {
+      const mainImg = document.querySelector('#mainMediaContainer img');
+      if (mainImg) {
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        lightbox.style.display = 'flex';
+        lightboxImg.src = mainImg.src;
+      }
+    }
+
+    function closeLightbox(e) {
+      if (e.target.id === 'imageLightbox' || e.target.className === 'lightbox-close') {
+        document.getElementById('imageLightbox').style.display = 'none';
+      }
+    }
   </script>
 </body>
 

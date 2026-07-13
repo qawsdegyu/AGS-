@@ -279,34 +279,7 @@
 
 
 
-        <!-- Price Range -->
-        <div class="filter-card">
-          <div class="filter-title open" onclick="toggleFilter(this)">
-            نطاق السعر (د.أ)
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </div>
-          <div class="price-range">
-            <div class="price-inputs">
-              <div>
-                <label style="font-size:11px;color:var(--gray-500);display:block;margin-bottom:4px;">من</label>
-                <input type="number" class="price-input" value="0" min="0" max="5000" id="priceMin"
-                  oninput="runFilters()" />
-              </div>
-              <div>
-                <label style="font-size:11px;color:var(--gray-500);display:block;margin-bottom:4px;">إلى</label>
-                <input type="number" class="price-input" value="5000" min="0" max="5000" id="priceMax"
-                  oninput="document.getElementById('priceRange').value = this.value; runFilters()" />
-              </div>
-            </div>
-            <input type="range" class="range-slider" min="0" max="5000" value="5000" id="priceRange"
-              oninput="updatePriceMax(this.value); runFilters()" />
-            <div
-              style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);margin-top:4px;">
-              <span>0 د.أ</span><span>5,000 د.أ</span></div>
-          </div>
-        </div>
+
 
 
       </aside>
@@ -457,7 +430,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
-              خدمات الفحص البيئي
+              خدمات الشركة
             </a>
             <a href="rfq.html" class="footer-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -484,24 +457,14 @@
               </svg>
               أجهزة الفحص والقياس
             </a>
-            <a href="products.html?cat=gas" class="footer-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              أجهزة قياس الغازات
-            </a>
+
             <a href="products.html?cat=fire" class="footer-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
               أنظمة إنذار الحريق
             </a>
-            <a href="products.html?cat=ppe" class="footer-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              معدات PPE
-            </a>
+
           </div>
         </div>
 

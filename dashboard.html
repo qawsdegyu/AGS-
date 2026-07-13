@@ -888,6 +888,32 @@
                 سيتم تطبيق هذه النسبة كخصم تلقائي على إجمالي قيمة المشتريات للزبون عند إتمامه لطلبه الأول في المتجر.
               </div>
             </div>
+
+            <h4 style="font-size:var(--text-md);font-weight:700;color:var(--dark-800);margin-top:var(--space-6);margin-bottom:var(--space-4);border-bottom:1px solid var(--gray-200);padding-bottom:var(--space-3);">إعدادات الشعارات (Logos)</h4>
+            
+            <div class="grid grid-2" style="gap:var(--space-5); margin-bottom:var(--space-5);">
+              <div class="form-group" style="background:var(--gray-50); padding:var(--space-4); border-radius:var(--radius-lg); border:1px solid var(--gray-200);">
+                <label class="form-label" style="font-weight:600;">شعار شريط التنقل (Navbar Logo)</label>
+                <div style="margin-bottom:var(--space-3); text-align:center; background:var(--white); padding:var(--space-2); border-radius:var(--radius-md); border:1px dashed var(--gray-300);">
+                  <img id="previewNavbarLogo" src="logo.png" style="max-height:60px; max-width:100%; object-fit:contain;" alt="Navbar Logo Preview">
+                </div>
+                <input type="file" id="settingNavbarLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" />
+                <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">
+                  أفضل مقاس: ارتفاع 40-60 بكسل. سيتم استبدال الشعار في أعلى جميع الصفحات.
+                </div>
+              </div>
+              
+              <div class="form-group" style="background:var(--dark-800); color:var(--white); padding:var(--space-4); border-radius:var(--radius-lg); border:1px solid var(--gray-200);">
+                <label class="form-label" style="font-weight:600; color:var(--white);">شعار الفوتر (Footer Logo)</label>
+                <div style="margin-bottom:var(--space-3); text-align:center; background:rgba(255,255,255,0.05); padding:var(--space-2); border-radius:var(--radius-md); border:1px dashed rgba(255,255,255,0.2);">
+                  <img id="previewFooterLogo" src="logof.png" style="max-height:80px; max-width:100%; object-fit:contain;" alt="Footer Logo Preview">
+                </div>
+                <input type="file" id="settingFooterLogoFile" class="form-control" accept="image/png, image/jpeg, image/svg+xml" style="background:var(--white); color:var(--dark-800);" />
+                <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:8px;">
+                  أفضل مقاس: ارتفاع 80-100 بكسل. يفضل استخدام صورة بخلفية شفافة (PNG/SVG) لتبدو مناسبة مع الخلفية الداكنة للفوتر.
+                </div>
+              </div>
+            </div>
             
             <div style="display:flex; gap: var(--space-3);">
               <button class="btn btn-primary" onclick="saveStoreSettings()" id="btnSaveSettings">حفظ الإعدادات</button>
