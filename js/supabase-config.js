@@ -391,12 +391,13 @@ function resetAdInterval() {
 async function loadDynamicLogos() {
     if (!window.supabaseClient) return;
     try {
-        const { data, error } = await window.supabaseClient.from('store_settings').select('*').in('key', ['navbar_logo', 'footer_logo']);
+        const { data, error } = await window.supabaseClient.from('store_settings').select('*').in('key', ['navbar_logo', 'footer_logo', 'favicon_logo']);
         if (error) throw error;
         if (!data || data.length === 0) return;
 
         const navLogo = data.find(s => s.key === 'navbar_logo')?.text_value;
         const footerLogo = data.find(s => s.key === 'footer_logo')?.text_value;
+        const faviconLogo = data.find(s => s.key === 'favicon_logo')?.text_value;
 
         if (navLogo) {
             document.querySelectorAll('img').forEach(img => {
@@ -412,6 +413,16 @@ async function loadDynamicLogos() {
                     img.src = footerLogo;
                 }
             });
+        }
+
+        if (faviconLogo) {
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+            link.href = faviconLogo;
         }
     } catch (err) {
         console.error('Error loading dynamic logos:', err);

@@ -640,34 +640,31 @@
             <input type="radio" name="paymentMethod" value="COD" checked>
             <div class="pay-info">
               <strong>💵 الدفع عند الاستلام (COD)</strong>
-              <small>ادفع نقداً للمندوب عند استلام طلبك — متاح في كل الأردن</small>
+              <small>ادفع نقداً للمندوب عند استلام طلبك</small>
             </div>
           </label>
 
-          <label class="pay-option" id="lbl-cliq-umniah" onclick="selectPayment('CLIQ_UMNIAH', this)">
-            <input type="radio" name="paymentMethod" value="CLIQ_UMNIAH">
+          <label class="pay-option" id="lbl-cliq" onclick="selectPayment('CLIQ', this)">
+            <input type="radio" name="paymentMethod" value="CLIQ">
             <div class="pay-info">
-              <strong>📱 كليك (CliQ) - أمنية / بنك الإتحاد</strong>
-              <small>التحويل إلى الرقم: <span id="num-umniah">0786776057</span> <button type="button" class="btn-copy"
-                  onclick="copyNum(event, 'num-umniah', this)">📋 نسخ</button></small>
-            </div>
-            <div class="pay-badges">
-              <span
-                style="background:#0F172A;color:white;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;">CliQ</span>
+              <strong>📱 كليك (CliQ)</strong>
+              <small>التحويل إلى: <span id="num-umniah">0786776057</span> أو <span id="num-zain">0791852909</span></small>
             </div>
           </label>
 
-          <label class="pay-option" id="lbl-cliq-zain" onclick="selectPayment('CLIQ_ZAIN', this)">
-            <input type="radio" name="paymentMethod" value="CLIQ_ZAIN">
+          <label class="pay-option" id="lbl-bank" onclick="selectPayment('BANK_TRANSFER', this)">
+            <input type="radio" name="paymentMethod" value="BANK_TRANSFER">
             <div class="pay-info">
-              <strong>📱 كليك (CliQ) - محفظة زين كاش</strong>
-              <small>التحويل إلى الرقم: <span id="num-zain">0791852909</span> <button type="button" class="btn-copy"
-                  onclick="copyNum(event, 'num-zain', this)">📋 نسخ</button></small>
+              <strong>🏦 تحويل بنكي</strong>
+              <small>التحويل المباشر إلى حساب الشركة البنكي</small>
             </div>
-            <div class="pay-badges">
-              <span
-                style="background:#0F172A;color:white;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;">Zain
-                Cash</span>
+          </label>
+
+          <label class="pay-option" id="lbl-check" onclick="selectPayment('READY_CHECK', this)">
+            <input type="radio" name="paymentMethod" value="READY_CHECK">
+            <div class="pay-info">
+              <strong>🧾 شيك جاهز للصرف</strong>
+              <small>تسليم شيك جاهز للصرف للمندوب عند الاستلام</small>
             </div>
           </label>
 
@@ -1194,7 +1191,9 @@
         status: 'بانتظار التأكيد',
         payment_status:
           paymentMethod === 'COD' ? 'الدفع عند الاستلام' :
-            paymentMethod.startsWith('CLIQ') ? 'بانتظار تحويل كليك' : 'غير مدفوع',
+            paymentMethod.startsWith('CLIQ') ? 'بانتظار تحويل كليك' :
+              paymentMethod === 'BANK_TRANSFER' ? 'بانتظار تحويل بنكي' :
+                paymentMethod === 'READY_CHECK' ? 'شيك جاهز للاستلام' : 'غير مدفوع',
         items: cartPayload
       };
 
@@ -1273,7 +1272,7 @@
           <h2 style="font-size:1.75rem;font-weight:800;color:#0F172A;margin-bottom:.75rem;">🎉 تم استلام طلبك بنجاح!</h2>
           <div style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:12px; padding:1.5rem; max-width:480px; margin:0 auto 2rem; text-align:right;">
              <div style="margin-bottom:10px;"><strong>رقم الطلب:</strong> <span style="font-family:monospace;font-size:1.1rem;color:#1565C0;">#${data?.[0]?.id?.split('-')[0] || Math.floor(Math.random() * 100000)}</span></div>
-             <div style="margin-bottom:10px;"><strong>حالة الدفع:</strong> ${payload.payment_method.startsWith('CLIQ') ? '<span style="color:#F59E0B;">قيد المراجعة (سيتم التأكيد خلال ساعات العمل)</span>' : 'الدفع عند الاستلام'}</div>
+             <div style="margin-bottom:10px;"><strong>حالة الدفع:</strong> ${payload.payment_method.startsWith('CLIQ') ? '<span style="color:#F59E0B;">قيد مراجعة إيصال التحويل</span>' : payload.payment_method === 'BANK_TRANSFER' ? 'سيتم تزويدك بمعلومات الحساب البنكي' : payload.payment_method === 'READY_CHECK' ? 'يرجى تجهيز الشيك للمندوب' : 'الدفع نقداً عند الاستلام'}</div>
              <div style="color:#64748B;font-size:0.95rem;line-height:1.6;margin-top:1rem;">
                شكراً لك <strong>${payload.customer_name}</strong>! تم استلام طلبك وسيتم التواصل معك على الرقم <strong dir="ltr">${payload.customer_phone}</strong> قريباً لتأكيد موعد التوصيل.
              </div>

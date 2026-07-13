@@ -1678,7 +1678,13 @@ window.printInvoice = async function(orderId) {
                         رقم الفاتورة: #${order.id.split('-')[0]}<br>
                         تاريخ الطلب: ${new Date(order.created_at).toLocaleDateString('ar-JO')}<br>
                         حالة الدفع: <strong>${order.payment_status || 'غير مدفوع'}</strong><br>
-                        طريقة الدفع: ${order.payment_method === 'cod' ? 'الدفع عند الاستلام' : 'بطاقة ائتمانية'}
+                        طريقة الدفع: ${
+                            order.payment_method === 'COD' ? 'الدفع عند الاستلام' : 
+                            order.payment_method === 'CLIQ' ? 'كليك (CliQ)' :
+                            order.payment_method === 'BANK_TRANSFER' ? 'تحويل بنكي' :
+                            order.payment_method === 'READY_CHECK' ? 'شيك جاهز للصرف' :
+                            order.payment_method || 'غير محدد'
+                        }
                     </div>
                 </div>
                 
@@ -2097,6 +2103,7 @@ window.loadStoreSettings = async function() {
         let discount = 0;
         let navbarLogoUrl = '';
         let footerLogoUrl = '';
+        let faviconLogoUrl = '';
 
         if (data) {
             const setting = data.find(s => s.key === 'first_order_discount');
@@ -2107,6 +2114,9 @@ window.loadStoreSettings = async function() {
 
             const footerSetting = data.find(s => s.key === 'footer_logo');
             if (footerSetting && footerSetting.text_value) footerLogoUrl = footerSetting.text_value;
+
+            const faviconSetting = data.find(s => s.key === 'favicon_logo');
+            if (faviconSetting && faviconSetting.text_value) faviconLogoUrl = faviconSetting.text_value;
         }
         
         const inputField = document.getElementById('settingFirstOrderDiscount');
@@ -2120,6 +2130,11 @@ window.loadStoreSettings = async function() {
         if (footerLogoUrl) {
             const previewFoot = document.getElementById('previewFooterLogo');
             if (previewFoot) previewFoot.src = footerLogoUrl;
+        }
+
+        if (faviconLogoUrl) {
+            const previewFav = document.getElementById('previewFaviconLogo');
+            if (previewFav) previewFav.src = faviconLogoUrl;
         }
     } catch (err) {
         console.error('Error loading settings:', err);
@@ -2142,6 +2157,7 @@ window.saveStoreSettings = async function() {
         // Handle image uploads
         const navFile = document.getElementById('settingNavbarLogoFile')?.files[0];
         const footerFile = document.getElementById('settingFooterLogoFile')?.files[0];
+        const faviconFile = document.getElementById('settingFaviconLogoFile')?.files[0];
 
         if (navFile) {
             const urls = await uploadMediaFiles([navFile]);
@@ -2156,6 +2172,14 @@ window.saveStoreSettings = async function() {
             if (urls && urls.length > 0) {
                 updates.push({ key: 'footer_logo', text_value: urls[0] });
                 document.getElementById('previewFooterLogo').src = urls[0];
+            }
+        }
+
+        if (faviconFile) {
+            const urls = await uploadMediaFiles([faviconFile]);
+            if (urls && urls.length > 0) {
+                updates.push({ key: 'favicon_logo', text_value: urls[0] });
+                document.getElementById('previewFaviconLogo').src = urls[0];
             }
         }
         
