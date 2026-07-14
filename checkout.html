@@ -618,8 +618,8 @@
               </div>
             </div>
             <div class="form-group">
-              <label>العنوان التفصيلي <span class="req">*</span></label>
-              <input type="text" id="deliveryAddress" class="form-control" placeholder="اسم الشارع، رقم المبنى، الطابق" required oninput="checkProgress(); refreshSubmitButton()">
+              <label>العنوان التفصيلي <span style="color:#94A3B8;font-weight:600;">(اختياري)</span></label>
+              <input type="text" id="deliveryAddress" class="form-control" placeholder="اسم الشارع، رقم المبنى، الطابق" oninput="checkProgress(); refreshSubmitButton()">
             </div>
             <button type="button" class="btn-place-order" style="margin-top: 10px; width: 100%; box-shadow: none; font-size: 14px;" onclick="toggleSection('payment')" id="btn-next-payment">متابعة إلى الدفع ↓</button>
           </div>
@@ -821,6 +821,7 @@
       document.getElementById('userEmailDisplay') && (document.getElementById('userEmailDisplay').textContent = user.email);
       document.getElementById('customerEmail').value = user.email;
       if (user.user_metadata?.full_name) document.getElementById('customerName').value = user.user_metadata.full_name;
+      if (user.user_metadata?.phone) document.getElementById('customerPhone').value = user.user_metadata.phone;
 
       // Load cart from localStorage
       try {
@@ -992,12 +993,12 @@
         }
         
         // If delivery is fully filled, we can auto-open payment.
-        if (city && area && addr) {
-          // Open payment only if they just finished delivery
-          if (document.getElementById('section-delivery')?.classList.contains('collapsed') === false) {
-             toggleSection('payment');
-          }
-        }
+        // Auto-open is disabled to prevent jumping while user is typing the detailed address.
+        // if (city && area && addr) {
+        //   if (document.getElementById('section-delivery')?.classList.contains('collapsed') === false) {
+        //      toggleSection('payment');
+        //   }
+        // }
       }
     }
 
@@ -1104,9 +1105,6 @@
       } else if (!city) {
         b.disabled = true;
         bt.textContent = 'اختر المحافظة أولاً';
-      } else if (!document.getElementById('deliveryAddress')?.value.trim()) {
-        b.disabled = true;
-        bt.textContent = 'الرجاء إدخال العنوان التفصيلي';
       } else if (!paymentMethod) {
         b.disabled = true;
         bt.textContent = 'اختر طريقة الدفع أولاً';
@@ -1150,7 +1148,6 @@
       if (!city) { alert('يرجى اختيار المحافظة'); return; }
 
       const address = document.getElementById('deliveryAddress').value.trim();
-      if (!address) { alert('يرجى إدخال العنوان التفصيلي'); return; }
 
       if (baseSubtotal <= 0) { alert('خطأ: مجموع الطلب يساوي صفر. يرجى إعادة المحاولة.'); return; }
 

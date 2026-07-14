@@ -113,6 +113,9 @@ window._dashData = {};
 
 async function loadDashboardOverview() {
     try {
+        const periodFilterEl = document.getElementById('kpi-period-filter');
+        const period = periodFilterEl ? periodFilterEl.value : 'all';
+
         ['kpi-orders-count','kpi-sales-amount','kpi-rfqs-count','kpi-products-count'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = '<span style="display:inline-block;width:60px;height:20px;background:#E2E8F0;border-radius:4px;animation:pulse 1.5s infinite"></span>';
@@ -126,7 +129,7 @@ async function loadDashboardOverview() {
             { data: salesByCategoryData },
             { count: pendingOrdersCount }
         ] = await Promise.all([
-            supabase.rpc('get_dashboard_stats'),
+            supabase.rpc('get_dashboard_stats', { period_filter: period }),
             supabase.rpc('get_monthly_revenue'),
             supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5),
             supabase.from('rfqs').select('*').order('created_at', { ascending: false }).limit(3),
@@ -797,6 +800,9 @@ async function loadDashboardFeatures() {
         tbody.innerHTML = emptyStateRow(5, 'حدث خطأ في تحميل المميزات');
         console.error('Error loading features:', err);
     }
+    
+    loadPartners();
+    loadCertificates();
 }
 
 async function deleteFeature(id) {
@@ -861,6 +867,172 @@ async function saveFeature(e) {
     }
 }
 
+// ─── PARTNERS ────────────────────────────────────────────────────────────────
+async function loadPartners() {
+    const tbody = document.getElementById('partners-list');
+    if (!tbody) return;
+    tbody.innerHTML = skeletonRows(4);
+    try {
+        const { data, error } = await supabase.from('company_partners').select('*').order('display_order', { ascending: true }).order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!data || data.length === 0) { tbody.innerHTML = emptyStateRow(4, 'لا يوجد شركاء مضافين بعد'); return; }
+        
+        tbody.innerHTML = data.map(p => `
+            <tr>
+                <td><img src="${p.logo_url}" alt="Logo" style="max-height:40px;border-radius:4px;background:#fff;padding:2px;"></td>
+                <td style="font-weight:700;color:var(--dark-800);">${p.name}</td>
+                <td>${p.display_order}</td>
+                <td>
+                    <button class="btn btn-outline btn-sm" onclick="deletePartner('${p.id}')" style="font-size:11px;color:red;border-color:red;">حذف</button>
+                </td>
+            </tr>`).join('');
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = emptyStateRow(4, 'حدث خطأ في التحميل');
+    }
+}
+
+window.openPartnerModal = function() {
+    document.getElementById('partnerModalTitle').textContent = 'إضافة شريك جديد';
+    document.getElementById('partner-id').value = '';
+    document.getElementById('partner-name').value = '';
+    document.getElementById('partner-logo').value = '';
+    document.getElementById('partner-logo').required = true;
+    document.getElementById('partner-logo-preview').style.display = 'none';
+    document.getElementById('partner-order').value = '0';
+    document.getElementById('partnerModal').style.display = 'flex';
+};
+
+window.savePartner = async function() {
+    const id = document.getElementById('partner-id').value;
+    const name = document.getElementById('partner-name').value;
+    const order = document.getElementById('partner-order').value || 0;
+    const fileInput = document.getElementById('partner-logo');
+    
+    if (!name) { showToast('تنبيه', 'يرجى إدخال اسم الشريك', 'error'); return; }
+    if (!id && (!fileInput.files || fileInput.files.length === 0)) { showToast('تنبيه', 'يرجى اختيار صورة الشعار', 'error'); return; }
+    
+    const btn = document.getElementById('btn-save-partner');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+    
+    try {
+        let logo_url = null;
+        if (fileInput.files && fileInput.files.length > 0) {
+            const urls = await uploadMediaFiles([fileInput.files[0]]);
+            if (urls && urls.length > 0) logo_url = urls[0];
+        }
+        
+        const payload = { name, display_order: parseInt(order) };
+        if (logo_url) payload.logo_url = logo_url;
+        
+        const res = id ? await supabase.from('company_partners').update(payload).eq('id', id) : await supabase.from('company_partners').insert([payload]);
+        if (res.error) throw res.error;
+        
+        showToast('تم', 'تم حفظ الشريك بنجاح', 'success');
+        document.getElementById('partnerModal').style.display = 'none';
+        loadPartners();
+    } catch (err) {
+        showToast('خطأ', err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'حفظ';
+    }
+};
+
+window.deletePartner = async function(id) {
+    if(!confirm('هل أنت متأكد من حذف هذا الشريك؟')) return;
+    try {
+        const { error } = await supabase.from('company_partners').delete().eq('id', id);
+        if (error) throw error;
+        showToast('تم', 'تم الحذف بنجاح', 'success');
+        loadPartners();
+    } catch(err) { showToast('خطأ', err.message, 'error'); }
+};
+
+// ─── CERTIFICATES ────────────────────────────────────────────────────────────
+async function loadCertificates() {
+    const tbody = document.getElementById('certificates-list');
+    if (!tbody) return;
+    tbody.innerHTML = skeletonRows(4);
+    try {
+        const { data, error } = await supabase.from('company_certificates').select('*').order('display_order', { ascending: true }).order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!data || data.length === 0) { tbody.innerHTML = emptyStateRow(4, 'لا يوجد شهادات مضافة بعد'); return; }
+        
+        tbody.innerHTML = data.map(c => `
+            <tr>
+                <td><img src="${c.image_url}" alt="Certificate" style="max-height:50px;border-radius:4px;border:1px solid #ddd;padding:2px;"></td>
+                <td style="font-weight:700;color:var(--dark-800);">${c.title}</td>
+                <td>${c.display_order}</td>
+                <td>
+                    <button class="btn btn-outline btn-sm" onclick="deleteCertificate('${c.id}')" style="font-size:11px;color:red;border-color:red;">حذف</button>
+                </td>
+            </tr>`).join('');
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = emptyStateRow(4, 'حدث خطأ في التحميل');
+    }
+}
+
+window.openCertificateModal = function() {
+    document.getElementById('certificateModalTitle').textContent = 'إضافة شهادة جديدة';
+    document.getElementById('certificate-id').value = '';
+    document.getElementById('certificate-title').value = '';
+    document.getElementById('certificate-image').value = '';
+    document.getElementById('certificate-image').required = true;
+    document.getElementById('certificate-image-preview').style.display = 'none';
+    document.getElementById('certificate-order').value = '0';
+    document.getElementById('certificateModal').style.display = 'flex';
+};
+
+window.saveCertificate = async function() {
+    const id = document.getElementById('certificate-id').value;
+    const title = document.getElementById('certificate-title').value;
+    const order = document.getElementById('certificate-order').value || 0;
+    const fileInput = document.getElementById('certificate-image');
+    
+    if (!title) { showToast('تنبيه', 'يرجى إدخال عنوان الشهادة', 'error'); return; }
+    if (!id && (!fileInput.files || fileInput.files.length === 0)) { showToast('تنبيه', 'يرجى اختيار صورة الشهادة', 'error'); return; }
+    
+    const btn = document.getElementById('btn-save-certificate');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+    
+    try {
+        let image_url = null;
+        if (fileInput.files && fileInput.files.length > 0) {
+            const urls = await uploadMediaFiles([fileInput.files[0]]);
+            if (urls && urls.length > 0) image_url = urls[0];
+        }
+        
+        const payload = { title, display_order: parseInt(order) };
+        if (image_url) payload.image_url = image_url;
+        
+        const res = id ? await supabase.from('company_certificates').update(payload).eq('id', id) : await supabase.from('company_certificates').insert([payload]);
+        if (res.error) throw res.error;
+        
+        showToast('تم', 'تم حفظ الشهادة بنجاح', 'success');
+        document.getElementById('certificateModal').style.display = 'none';
+        loadCertificates();
+    } catch (err) {
+        showToast('خطأ', err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'حفظ';
+    }
+};
+
+window.deleteCertificate = async function(id) {
+    if(!confirm('هل أنت متأكد من حذف هذه الشهادة؟')) return;
+    try {
+        const { error } = await supabase.from('company_certificates').delete().eq('id', id);
+        if (error) throw error;
+        showToast('تم', 'تم الحذف بنجاح', 'success');
+        loadCertificates();
+    } catch(err) { showToast('خطأ', err.message, 'error'); }
+};
+
 // ─── ORDERS ───────────────────────────────────────────────────────────────────
 async function loadDashboardOrders() {
     const tbody = document.querySelector('#section-orders .data-table tbody');
@@ -871,51 +1043,187 @@ async function loadDashboardOrders() {
         if (error) throw error;
         if (!ordersData || ordersData.length === 0) { tbody.innerHTML = emptyStateRow(8, 'لا توجد طلبات حتى الآن'); return; }
         
-        // Sort: put completed at the bottom
-        const orders = ordersData.sort((a, b) => (a.status === 'مكتمل' || a.status === 'تم التوصيل' ? 1 : 0) - (b.status === 'مكتمل' || b.status === 'تم التوصيل' ? 1 : 0));
-        
-        tbody.innerHTML = orders.map(order => {
-            let receiptBtn = '';
-            const urlMatch = order.payment_status?.match(/(https?:\/\/[^\s)]+)/);
-            if (urlMatch) {
-                receiptBtn = `<div style="margin-top:4px;"><a href="${urlMatch[1]}" target="_blank" style="display:inline-block;background:#0F172A;color:white;padding:2px 8px;border-radius:4px;font-size:10px;text-decoration:none;">عرض الإيصال</a></div>`;
-            }
-            
-            // Clean up the status for the dropdown logic if needed, but it works as is since it's not 'مدفوع'
-            return `
-            <tr style="${order.status === 'مكتمل' || order.status === 'تم التوصيل' ? 'opacity:0.6;background:var(--gray-50);' : ''}">
-                <td style="font-weight:700;color:var(--primary-700);">#${order.id.split('-')[0]}</td>
-                <td>${order.customer_name || '-'}</td>
-                <td>${Array.isArray(order.items) ? order.items.length : 0} منتج</td>
-                <td>${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
-                <td>
-                    <select onchange="changePaymentStatus('${order.id}', this.value)" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:bold;background:${order.payment_status === 'مدفوع' ? '#dcfce7' : '#e0f2fe'};color:${order.payment_status === 'مدفوع' ? '#166534' : '#075985'};">
-                        <option value="غير مدفوع" ${order.payment_status !== 'مدفوع' ? 'selected' : ''}>غير مدفوع / بانتظار تأكيد</option>
-                        <option value="مدفوع" ${order.payment_status === 'مدفوع' ? 'selected' : ''}>مدفوع</option>
-                    </select>
-                    ${receiptBtn}
-                </td>
-                <td>
-                    <select onchange="changeOrderStatus('${order.id}', this.value, '${order.status}')" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;background:white;">
-                        <option value="بانتظار التأكيد" ${order.status === 'بانتظار التأكيد' || order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
-                        <option value="قيد المعالجة" ${order.status === 'قيد المعالجة' ? 'selected' : ''}>قيد المعالجة</option>
-                        <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
-                        <option value="تم التسليم" ${order.status === 'تم التسليم' || order.status === 'مكتمل' ? 'selected' : ''}>تم التسليم</option>
-                        <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
-                    </select>
-                </td>
-                <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
-                <td>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                        <button class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px;" onclick="showOrderDetails('${order.id}')">تفاصيل</button>
-                    </div>
-                </td>
-            </tr>`;
-        }).join('');
+        window._ordersList = ordersData || [];
+        filterAndSortOrders();
     } catch (err) {
         console.error('Error loading orders:', err);
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadDashboardOrders()" style="cursor:pointer;">إعادة المحاولة</button></td></tr>`;
     }
+}
+
+window.filterAndSortOrders = function() {
+    if (!window._ordersList) return;
+    let filtered = [...window._ordersList];
+    
+    // Filter by status
+    const statusFilter = document.getElementById('orders-status-filter') ? document.getElementById('orders-status-filter').value : 'all';
+    if (statusFilter !== 'all') {
+        filtered = filtered.filter(o => o.status === statusFilter || (statusFilter === 'قيد المراجعة' && o.status === 'بانتظار التأكيد') || (statusFilter === 'تم التسليم' && o.status === 'مكتمل'));
+    }
+    
+    // Sort
+    const sortVal = document.getElementById('orders-sort') ? document.getElementById('orders-sort').value : 'newest';
+    if (sortVal === 'newest') {
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'oldest') {
+        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'total_desc') {
+        filtered.sort((a, b) => (parseFloat(b.total_amount) || 0) - (parseFloat(a.total_amount) || 0));
+    } else if (sortVal === 'total_asc') {
+        filtered.sort((a, b) => (parseFloat(a.total_amount) || 0) - (parseFloat(b.total_amount) || 0));
+    }
+    
+    // Push completed to bottom if sorting by date (or in general)
+    if (sortVal === 'newest' || sortVal === 'oldest') {
+        filtered.sort((a, b) => (a.status === 'مكتمل' || a.status === 'تم التوصيل' || a.status === 'تم التسليم' ? 1 : 0) - (b.status === 'مكتمل' || b.status === 'تم التوصيل' || b.status === 'تم التسليم' ? 1 : 0));
+    }
+
+    renderOrders(filtered);
+};
+
+function renderOrders(orders) {
+    const tbody = document.querySelector('#section-orders .data-table tbody');
+    if (!tbody) return;
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:1rem;">لا توجد طلبات مطابقة</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = orders.map(order => {
+        let receiptBtn = '';
+        const urlMatch = order.payment_status?.match(/(https?:\/\/[^\s)]+)/);
+        if (urlMatch) {
+            receiptBtn = `<div style="margin-top:4px;"><a href="${urlMatch[1]}" target="_blank" style="display:inline-block;background:#0F172A;color:white;padding:2px 8px;border-radius:4px;font-size:10px;text-decoration:none;">عرض الإيصال</a></div>`;
+        }
+        
+        return `
+        <tr style="${order.status === 'مكتمل' || order.status === 'تم التوصيل' || order.status === 'تم التسليم' ? 'opacity:0.6;background:var(--gray-50);' : ''}">
+            <td style="font-weight:700;color:var(--primary-700);">#${order.id.split('-')[0]}</td>
+            <td>${order.customer_name || '-'}</td>
+            <td>${Array.isArray(order.items) ? order.items.length : 0} منتج</td>
+            <td>${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
+            <td>
+                <select onchange="changePaymentStatus('${order.id}', this.value)" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:bold;background:${order.payment_status === 'مدفوع' ? '#dcfce7' : '#e0f2fe'};color:${order.payment_status === 'مدفوع' ? '#166534' : '#075985'};">
+                    <option value="غير مدفوع" ${order.payment_status !== 'مدفوع' ? 'selected' : ''}>غير مدفوع / بانتظار تأكيد</option>
+                    <option value="مدفوع" ${order.payment_status === 'مدفوع' ? 'selected' : ''}>مدفوع</option>
+                </select>
+                ${receiptBtn}
+            </td>
+            <td>
+                <select onchange="changeOrderStatus('${order.id}', this.value, '${order.status}')" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;background:white;">
+                    <option value="بانتظار التأكيد" ${order.status === 'بانتظار التأكيد' || order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
+                    <option value="قيد المعالجة" ${order.status === 'قيد المعالجة' ? 'selected' : ''}>قيد المعالجة</option>
+                    <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
+                    <option value="تم التسليم" ${order.status === 'تم التسليم' || order.status === 'مكتمل' ? 'selected' : ''}>تم التسليم</option>
+                    <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                </select>
+            </td>
+            <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
+            <td class="no-print">
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <button class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px;" onclick="showOrderDetails('${order.id}')">تفاصيل</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+window.printOrders = function() {
+    if (!window._ordersList || window._ordersList.length === 0) {
+        showToast('تنبيه', 'لا يوجد طلبات للطباعة', 'info');
+        return;
+    }
+    
+    let filtered = [...window._ordersList];
+    const statusFilter = document.getElementById('orders-status-filter') ? document.getElementById('orders-status-filter').value : 'all';
+    if (statusFilter !== 'all') {
+        filtered = filtered.filter(o => o.status === statusFilter || (statusFilter === 'قيد المراجعة' && o.status === 'بانتظار التأكيد') || (statusFilter === 'تم التسليم' && o.status === 'مكتمل'));
+    }
+    
+    const sortVal = document.getElementById('orders-sort') ? document.getElementById('orders-sort').value : 'newest';
+    if (sortVal === 'newest') {
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'oldest') {
+        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'total_desc') {
+        filtered.sort((a, b) => (parseFloat(b.total_amount) || 0) - (parseFloat(a.total_amount) || 0));
+    } else if (sortVal === 'total_asc') {
+        filtered.sort((a, b) => (parseFloat(a.total_amount) || 0) - (parseFloat(b.total_amount) || 0));
+    }
+
+    let html = `
+        <html dir="rtl">
+        <head>
+            <title>كشف إدارة الطلبات</title>
+            <style>
+                body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 20px; color: #333; }
+                h2 { text-align: center; color: #0F2C59; margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: right; font-size: 14px; }
+                th { background-color: #f8f9fa; color: #0F2C59; }
+                .status { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+                .status-success { background-color: #dcfce7; color: #166534; }
+                .status-pending { background-color: #e0f2fe; color: #075985; }
+                .status-shipped { background-color: #fef08a; color: #854d0e; }
+                .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+                @media print {
+                    @page { margin: 1.5cm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>كشف جميع الطلبات</h2>
+            <div style="text-align:left; font-size:12px; color:#666; margin-bottom:10px;">تاريخ الطباعة: ${new Date().toLocaleDateString('en-US')}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>عدد المنتجات</th>
+                        <th>الإجمالي</th>
+                        <th>حالة الدفع</th>
+                        <th>حالة الطلب</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    filtered.forEach(order => {
+        let payClass = order.payment_status === 'مدفوع' ? 'status status-success' : 'status status-pending';
+        let ordClass = (order.status === 'مكتمل' || order.status === 'تم التسليم') ? 'status status-success' : 
+                       order.status === 'ملغي' ? 'status status-cancelled' : 
+                       order.status === 'تم الشحن' ? 'status status-shipped' : 'status status-pending';
+        html += `
+            <tr>
+                <td style="font-weight:bold;">#${order.id.split('-')[0]}</td>
+                <td>${order.customer_name || '-'}</td>
+                <td>${Array.isArray(order.items) ? order.items.length : 0}</td>
+                <td>${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
+                <td><span class="${payClass}">${order.payment_status === 'مدفوع' ? 'مدفوع' : 'غير مدفوع'}</span></td>
+                <td><span class="${ordClass}">${order.status || 'قيد المراجعة'}</span></td>
+                <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    
+    setTimeout(() => {
+        printWin.print();
+        printWin.close();
+    }, 250);
 }
 
 window.showOrderDetails = async function(orderId) {
@@ -945,9 +1253,9 @@ window.showOrderDetails = async function(orderId) {
         content.innerHTML = `
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;background:var(--gray-50);padding:1rem;border-radius:var(--radius-md);">
                 <div><strong>العميل:</strong> ${order.customer_name || '-'}</div>
-                <div><strong>الهاتف:</strong> <a href="tel:${order.phone}" dir="ltr" style="display:inline-block">${order.phone || '-'}</a></div>
-                <div><strong>المدينة:</strong> ${order.city || '-'}</div>
-                <div><strong>العنوان:</strong> ${order.address || '-'}</div>
+                <div><strong>الهاتف:</strong> <a href="tel:${order.customer_phone}" dir="ltr" style="display:inline-block">${order.customer_phone || '-'}</a></div>
+                <div><strong>المدينة:</strong> ${order.delivery_city || '-'}</div>
+                <div><strong>العنوان:</strong> ${order.delivery_address || '-'}</div>
                 <div><strong>التاريخ:</strong> <span dir="ltr">${new Date(order.created_at).toLocaleString('en-GB')}</span></div>
                 <div><strong>الإجمالي:</strong> ${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</div>
                 <div style="grid-column:1/-1;"><strong>ملاحظات:</strong> ${order.notes || '-'}</div>
@@ -1083,11 +1391,82 @@ async function loadDashboardAnalytics() {
                     parent.innerHTML = '<div style="display:flex;height:100%;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
                 }
             }
+            // Fetch page_views for tracking charts
+            const { data: pageViewsData, error: pvError } = await supabase.from('page_views').select('*');
+            if (!pvError && pageViewsData) {
+                // 1. Visitors by Date
+                const visitorsByDate = {};
+                pageViewsData.forEach(pv => {
+                    const date = new Date(pv.created_at).toLocaleDateString('en-GB');
+                    visitorsByDate[date] = (visitorsByDate[date] || 0) + 1;
+                });
+                const sortedDates = Object.keys(visitorsByDate).sort((a,b) => {
+                    const [da,ma,ya] = a.split('/'); const [db,mb,yb] = b.split('/');
+                    return new Date(ya,ma-1,da) - new Date(yb,mb-1,db);
+                }).slice(-14);
+                const visitorsCount = sortedDates.map(d => visitorsByDate[d]);
+
+                getOrCreateChart('analyticsVisitorsChart', {
+                    type: 'line',
+                    data: {
+                        labels: sortedDates,
+                        datasets: [{ label: 'الزيارات', data: visitorsCount, borderColor: '#1565C0', backgroundColor: 'rgba(21, 101, 192, 0.1)', fill: true, tension: 0.4 }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend:{display:false} },
+                        scales: { y: { beginAtZero: true, ticks: { font:{family:'Cairo'} } }, x: { ticks:{font:{family:'Cairo'}} } }
+                    }
+                });
+
+                // 2. Traffic Sources
+                const sources = {};
+                pageViewsData.forEach(pv => {
+                    const s = pv.source || 'Direct';
+                    sources[s] = (sources[s] || 0) + 1;
+                });
+                getOrCreateChart('analyticsSourceChart', {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(sources),
+                        datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
+                    },
+                    options: { responsive: true, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
+                });
+
+                // 3. Top Viewed Products
+                const productViews = {};
+                pageViewsData.forEach(pv => {
+                    if (pv.product_id) {
+                        productViews[pv.product_id] = (productViews[pv.product_id] || 0) + 1;
+                    }
+                });
+                const sortedProductIds = Object.keys(productViews).sort((a,b) => productViews[b] - productViews[a]).slice(0, 10);
+                
+                const topViewedTbody = document.getElementById('analytics-top-viewed-products');
+                if (topViewedTbody) {
+                    if (sortedProductIds.length === 0) {
+                        topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات منتجات بعد');
+                    } else {
+                        const { data: productsData } = await supabase.from('products').select('id, name').in('id', sortedProductIds);
+                        const productNames = {};
+                        if (productsData) productsData.forEach(p => productNames[p.id] = p.name);
+                        
+                        topViewedTbody.innerHTML = sortedProductIds.map(pid => `
+                            <tr>
+                                <td style="font-weight:600;">${productNames[pid] || 'منتج غير معروف'}</td>
+                                <td><span class="badge" style="background:#E3F2FD;color:#1565C0;">${productViews[pid]} مشاهدة</span></td>
+                            </tr>`).join('');
+                    }
+                }
+            }
         }
     } catch (err) { console.error('Error loading analytics:', err); }
 }
 
 // ─── CUSTOMERS ────────────────────────────────────────────────────────────────
+window.allCustomers = [];
+
 async function loadDashboardCustomers() {
     const listBody = document.getElementById('customers-list');
     if (!listBody) return;
@@ -1095,20 +1474,100 @@ async function loadDashboardCustomers() {
     try {
         const { data: customers, error } = await supabase.from('customers').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        if (!customers || customers.length === 0) { listBody.innerHTML = emptyStateRow(5, 'لا يوجد عملاء مسجلين بعد'); return; }
-        listBody.innerHTML = customers.map(c => `
-            <tr>
-                <td style="font-weight:600;color:var(--dark-800);">${c.company_name || '-'}</td>
-                <td>${c.contact_person || '-'}</td>
-                <td>${c.email || '-'}</td>
-                <td><span style="font-family:monospace;background:#F1F5F9;padding:2px 6px;border-radius:4px;">${c.phone || '-'}</span></td>
-                <td>${new Date(c.created_at).toLocaleDateString('en-US')}</td>
-            </tr>`).join('');
+        window.allCustomers = customers || [];
+        renderCustomers();
     } catch (err) {
         console.error('Error loading customers:', err);
-        listBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadDashboardCustomers()" style="cursor:pointer;">إعادة المحاولة</button></td></tr>`;
+        listBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadDashboardCustomers()" style="cursor:pointer;border:none;background:#fee2e2;color:#dc2626;border-radius:4px;padding:4px 8px;">إعادة المحاولة</button></td></tr>`;
     }
 }
+
+function renderCustomers() {
+    const listBody = document.getElementById('customers-list');
+    if (!listBody) return;
+    if (!window.allCustomers || window.allCustomers.length === 0) {
+        listBody.innerHTML = emptyStateRow(5, 'لا يوجد عملاء مسجلين بعد');
+        return;
+    }
+    
+    const sortSelect = document.getElementById('customers-sort-select');
+    const sortVal = sortSelect ? sortSelect.value : 'date-desc';
+    
+    let sorted = [...window.allCustomers];
+    if (sortVal === 'date-desc') {
+        sorted.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'date-asc') {
+        sorted.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'name-asc') {
+        sorted.sort((a,b) => (a.company_name||'').localeCompare(b.company_name||'', 'ar'));
+    } else if (sortVal === 'name-desc') {
+        sorted.sort((a,b) => (b.company_name||'').localeCompare(a.company_name||'', 'ar'));
+    }
+
+    listBody.innerHTML = sorted.map(c => `
+        <tr>
+            <td style="font-weight:600;color:var(--dark-800);">${c.company_name || '-'}</td>
+            <td>${c.contact_person || '-'}</td>
+            <td>${c.email || '-'}</td>
+            <td><span style="font-family:monospace;background:#F1F5F9;padding:2px 6px;border-radius:4px;direction:ltr;display:inline-block;">${c.phone || '-'}</span></td>
+            <td>${new Date(c.created_at).toLocaleDateString('en-US')}</td>
+        </tr>`).join('');
+}
+
+window.sortCustomers = function() {
+    renderCustomers();
+};
+
+window.printCustomers = function() {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html dir="rtl" lang="ar">
+        <head>
+            <title>كشف العملاء</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+                body { font-family: 'Cairo', sans-serif; padding: 20px; color: #111827; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th, td { border: 1px solid #e5e7eb; padding: 12px 16px; text-align: right; }
+                th { background-color: #f9fafb; font-weight: 700; color: #374151; }
+                h2 { text-align: center; color: #111827; margin-bottom: 5px; }
+                .meta { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 30px; }
+                @media print {
+                    @page { margin: 1.5cm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>كشف بيانات العملاء المسجلين</h2>
+            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد العملاء: ${window.allCustomers.length}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>اسم العميل / الشركة</th>
+                        <th>جهة الاتصال</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الهاتف</th>
+                        <th>تاريخ التسجيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${document.getElementById('customers-list').innerHTML}
+                </tbody>
+            </table>
+            <script>
+                window.onload = function() { 
+                    setTimeout(() => {
+                        window.print(); 
+                        window.close(); 
+                    }, 500);
+                }
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+};
 
 // ─── INSPECTIONS ──────────────────────────────────────────────────────────────
 async function loadDashboardInspections() {
@@ -1602,6 +2061,8 @@ async function loadDashboardCustomers() {
 }
 
 // ─── INVOICES & PAYMENTS ──────────────────────────────────────────────────────
+window.allInvoices = [];
+
 async function loadDashboardInvoices() {
     const tbody = document.getElementById('invoices-list');
     if (!tbody) return;
@@ -1609,30 +2070,115 @@ async function loadDashboardInvoices() {
         const { data: orders, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
         if (error) throw error;
         
-        if (!orders || orders.length === 0) {
-            tbody.innerHTML = emptyStateRow(6, 'لا توجد فواتير حتى الآن');
-            return;
-        }
-        
-        tbody.innerHTML = orders.map(order => `
-            <tr>
-                <td style="font-weight:700;color:var(--primary-700);">#${order.id.split('-')[0]}</td>
-                <td>${order.customer_name || '-'}</td>
-                <td style="font-weight:bold;">${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
-                <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
-                <td><span class="badge ${order.payment_status === 'مدفوع' ? 'badge-success' : 'badge-primary'}">${order.payment_status || '-'}</span></td>
-                <td>
-                    <button class="btn btn-primary btn-sm" style="font-size:11px;padding:4px 8px;display:flex;align-items:center;gap:4px;" onclick="printInvoice('${order.id}')" title="طباعة الفاتورة">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                        طباعة
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        window.allInvoices = orders || [];
+        renderInvoices();
     } catch(err) {
         console.error('Error loading invoices:', err);
     }
 }
+
+function renderInvoices() {
+    const tbody = document.getElementById('invoices-list');
+    if (!tbody) return;
+    
+    if (!window.allInvoices || window.allInvoices.length === 0) {
+        tbody.innerHTML = emptyStateRow(6, 'لا توجد فواتير حتى الآن');
+        return;
+    }
+    
+    const sortSelect = document.getElementById('payments-sort-select');
+    const sortVal = sortSelect ? sortSelect.value : 'date-desc';
+    
+    let sorted = [...window.allInvoices];
+    if (sortVal === 'date-desc') {
+        sorted.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'date-asc') {
+        sorted.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'name-asc') {
+        sorted.sort((a,b) => (a.customer_name||'').localeCompare(b.customer_name||'', 'ar'));
+    } else if (sortVal === 'name-desc') {
+        sorted.sort((a,b) => (b.customer_name||'').localeCompare(a.customer_name||'', 'ar'));
+    }
+
+    tbody.innerHTML = sorted.map(order => `
+        <tr>
+            <td style="font-weight:700;color:var(--primary-700);">${(order.id||'').includes('-') ? '#' + order.id.split('-')[0] : order.id}</td>
+            <td>${order.customer_name || '-'}</td>
+            <td style="font-weight:bold;">${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
+            <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
+            <td style="max-width:250px;word-break:break-all;font-size:12px;white-space:pre-wrap;line-height:1.4;">${order.payment_status || '-'}</td>
+            <td>
+                <button class="btn btn-primary btn-sm" style="font-size:11px;padding:4px 8px;display:flex;align-items:center;gap:4px;" onclick="printInvoice('${order.id}')" title="طباعة الفاتورة">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    طباعة
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.sortPayments = function() {
+    renderInvoices();
+};
+
+window.printPayments = function() {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html dir="rtl" lang="ar">
+        <head>
+            <title>كشف المدفوعات والفواتير</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+                body { font-family: 'Cairo', sans-serif; padding: 20px; color: #111827; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th, td { border: 1px solid #e5e7eb; padding: 12px 16px; text-align: right; }
+                th { background-color: #f9fafb; font-weight: 700; color: #374151; }
+                h2 { text-align: center; color: #111827; margin-bottom: 5px; }
+                .meta { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 30px; }
+                @media print {
+                    @page { margin: 1.5cm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>كشف المدفوعات والفواتير</h2>
+            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد الحركات: ${window.allInvoices.length}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل / الشركة</th>
+                        <th>المبلغ</th>
+                        <th>تاريخ الطلب</th>
+                        <th>حالة الدفع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${window.allInvoices.map(order => `
+                        <tr>
+                            <td style="font-weight:700;">${(order.id||'').includes('-') ? '#' + order.id.split('-')[0] : order.id}</td>
+                            <td>${order.customer_name || '-'}</td>
+                            <td style="font-weight:bold;">${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
+                            <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
+                            <td style="max-width:250px;word-break:break-all;font-size:12px;white-space:pre-wrap;line-height:1.4;">${order.payment_status || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <script>
+                window.onload = function() { 
+                    setTimeout(() => {
+                        window.print(); 
+                        window.close(); 
+                    }, 500);
+                }
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+};
 
 window.printInvoice = async function(orderId) {
     try {
@@ -1921,14 +2467,13 @@ async function loadRegisteredUsers() {
     if (!window.supabase) return;
     
     try {
-        // Call the RPC function to get auth.users
         const { data, error } = await supabase.rpc('get_registered_users');
         
         if (error) throw error;
         
         if (!data || data.length === 0) {
             window.registeredUserEmails = [];
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--gray-500);">لا توجد حسابات مسجلة بعد</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--gray-500);">لا توجد حسابات مسجلة بعد</td></tr>';
             return;
         }
         
@@ -1941,15 +2486,78 @@ async function loadRegisteredUsers() {
                     <td style="font-weight:600;color:var(--dark-800);">${user.name || 'غير محدد'}</td>
                     <td dir="ltr" style="text-align:right;">${user.email}</td>
                     <td>${date}</td>
+                    <td>
+                        <button class="btn btn-sm" style="background:#FEE2E2;color:#DC2626;padding:4px 8px;font-size:11px;border:none;cursor:pointer;border-radius:4px;" onclick="deleteRegisteredUser('${user.id}')">حذف</button>
+                    </td>
                 </tr>
             `;
         }).join('');
         
     } catch(err) {
         console.error('Error loading registered users:', err);
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadRegisteredUsers()" style="cursor:pointer;margin-right:8px;">إعادة المحاولة</button></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadRegisteredUsers()" style="cursor:pointer;margin-right:8px;">إعادة المحاولة</button></td></tr>`;
     }
 }
+
+window.deleteRegisteredUser = async function(id) {
+    if(!confirm('هل أنت متأكد من حذف هذا الحساب نهائياً؟')) return;
+    try {
+        const { error } = await supabase.rpc('delete_registered_user', { user_id: id });
+        if(error) throw error;
+        showToast('نجاح', 'تم حذف الحساب بنجاح');
+        loadRegisteredUsers();
+    } catch(err) {
+        console.error('Error deleting user:', err);
+        showToast('خطأ', err.message, 'error');
+    }
+};
+
+window.showAddUserModal = function() {
+    document.getElementById('new-user-name').value = '';
+    document.getElementById('new-user-email').value = '';
+    document.getElementById('new-user-password').value = '';
+    document.getElementById('addUserModal').style.display = 'flex';
+};
+
+window.submitNewUser = async function() {
+    const name = document.getElementById('new-user-name').value.trim();
+    const email = document.getElementById('new-user-email').value.trim();
+    const password = document.getElementById('new-user-password').value;
+    
+    if(!name || !email || !password) {
+        showToast('خطأ', 'يرجى تعبئة جميع الحقول', 'error');
+        return;
+    }
+    if(password.length < 6) {
+        showToast('خطأ', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+        return;
+    }
+    
+    const btn = document.getElementById('btn-submit-new-user');
+    const originalText = btn.textContent;
+    btn.textContent = 'جاري الإضافة...';
+    btn.disabled = true;
+    
+    try {
+        const { data, error } = await supabase.rpc('create_registered_user', {
+            user_email: email,
+            user_password: password,
+            user_name: name
+        });
+        
+        if(error) throw error;
+        
+        showToast('نجاح', 'تم إضافة الحساب بنجاح');
+        document.getElementById('addUserModal').style.display = 'none';
+        loadRegisteredUsers();
+    } catch(err) {
+        console.error('Error adding user:', err);
+        showToast('خطأ', err.message, 'error');
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+};
 
 window.sendBulkEmail = function() {
     if (!window.registeredUserEmails || window.registeredUserEmails.length === 0) {

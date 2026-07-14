@@ -326,7 +326,8 @@ async function addToCart(productId, event) {
           name: product.title, 
           brand: product.brand, 
           price: product.price || 0, 
-          qty: 1 
+          qty: 1,
+          image: (product.images && product.images.length > 0) ? product.images[0] : ''
       });
     }
 
@@ -362,11 +363,13 @@ function renderCartItems() {
 
   cartContainer.innerHTML = cartItems.map(item => `
     <div style="display:flex;gap:var(--space-3);padding:var(--space-4);border:1px solid #E2E8F0;border-radius:var(--radius-xl);margin-bottom:var(--space-3);background:#F8F9FA;position:relative;">
-      <div style="width:70px;height:70px;background:#E6F0FA;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0F2C59" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      </div>
+      <a href="product-details.html?id=${item.id}#id=${item.id}" style="width:70px;height:70px;background:#E6F0FA;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;">` : `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0F2C59" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`}
+      </a>
       <div style="flex:1;">
-        <div style="font-weight:700;font-size:var(--text-sm);color:#0F2C59;margin-bottom:4px;padding-left:24px;">${item.name}</div>
+        <a href="product-details.html?id=${item.id}#id=${item.id}" style="text-decoration:none;">
+          <div style="font-weight:700;font-size:var(--text-sm);color:#0F2C59;margin-bottom:4px;padding-left:24px;">${item.name}</div>
+        </a>
         <div style="font-size:var(--text-xs);color:#718096;">${item.brand}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:var(--space-2);">
           <span style="font-weight:800;color:#0F2C59;">${parseFloat(item.price).toLocaleString('en-US', {minimumFractionDigits: 2})} د.أ</span>
@@ -907,8 +910,50 @@ async function loadHomeFeaturesStrip() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadHomeFeaturesStrip();
   updateCartCount();
   renderCartItems();
+
+  /* ==============================
+     ANALYTICS TRACKING
+     ============================== */
+  if (typeof sc !== 'undefined') {
+      try {
+          let sessionId = sessionStorage.getItem('visitor_session_id');
+          if (!sessionId) {
+              sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+              sessionStorage.setItem('visitor_session_id', sessionId);
+          }
+
+          let source = 'Direct';
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.has('utm_source')) {
+              source = urlParams.get('utm_source');
+          } else if (document.referrer) {
+              const referrerUrl = new URL(document.referrer);
+              if (referrerUrl.hostname.includes('facebook.com')) source = 'Facebook';
+              else if (referrerUrl.hostname.includes('google.com')) source = 'Google';
+              else if (referrerUrl.hostname.includes('instagram.com')) source = 'Instagram';
+              else if (referrerUrl.hostname.includes('twitter.com') || referrerUrl.hostname.includes('x.com')) source = 'Twitter';
+              else if (!referrerUrl.hostname.includes(window.location.hostname)) source = referrerUrl.hostname;
+          }
+
+          let productId = null;
+          if (window.location.pathname.includes('product-details.html')) {
+              productId = urlParams.get('id');
+          }
+
+          const { error } = await sc.from('page_views').insert([{
+              page_url: window.location.pathname || '/',
+              product_id: productId,
+              source: source,
+              session_id: sessionId
+          }]);
+
+          if (error) console.error('Error logging page view:', error);
+      } catch (e) {
+          console.error('Analytics tracking error:', e);
+      }
+  }
 });
