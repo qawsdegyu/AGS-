@@ -65,6 +65,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetInactivityTimer();
         // ──────────────────────────────────────────────
 
+        // Setup default dates for filters (first of month to today)
+        const todayStr = new Date().toISOString().split('T')[0];
+        const firstOfMonthStr = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+        
+        ['customers', 'payments', 'orders', 'rfqs'].forEach(prefix => {
+            const fromEl = document.getElementById(`${prefix}-date-from`);
+            const toEl = document.getElementById(`${prefix}-date-to`);
+            if (fromEl && !fromEl.value) fromEl.value = firstOfMonthStr;
+            if (toEl && !toEl.value) toEl.value = todayStr;
+        });
+
         if (document.getElementById('section-products')) loadDashboardData();
     } catch (err) {
         showPageError('خطأ فادح: ' + err.message);
@@ -2386,7 +2397,7 @@ function renderInvoices() {
             <td style="font-weight:bold;">${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
             <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
             <td style="max-width:250px;word-break:break-all;font-size:12px;white-space:pre-wrap;line-height:1.4;">${order.payment_status || '-'}</td>
-            <td>
+            <td class="print-btn-col">
                 <button class="btn btn-primary btn-sm" style="font-size:11px;padding:4px 8px;display:flex;align-items:center;gap:4px;" onclick="printInvoice('${order.id}')" title="طباعة الفاتورة">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                     طباعة
@@ -2414,6 +2425,7 @@ window.printPayments = function() {
                 th { background-color: #f9fafb; font-weight: 700; color: #374151; }
                 h2 { text-align: center; color: #111827; margin-bottom: 5px; }
                 .meta { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 30px; }
+                .print-btn-col { display: none !important; }
                 @media print {
                     @page { margin: 1.5cm; }
                     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -2922,6 +2934,7 @@ async function editHomeFeature(id) {
         document.getElementById('homeFeatSubtitle').value = data.subtitle || '';
         document.getElementById('homeFeatIcon').value = data.icon || '';
         document.getElementById('homeFeatColor').value = data.theme_color_hex || '#1565C0';
+        document.getElementById('homeFeatLink').value = data.link_url || '';
         
         document.getElementById('homeFeatureModalTitle').textContent = 'تعديل ميزة الرئيسية';
         document.getElementById('homeFeatureModal').style.display = 'flex';
@@ -2942,7 +2955,8 @@ async function saveHomeFeature(e) {
             title: document.getElementById('homeFeatTitle').value,
             subtitle: document.getElementById('homeFeatSubtitle').value,
             icon: document.getElementById('homeFeatIcon').value,
-            theme_color_hex: document.getElementById('homeFeatColor').value
+            theme_color_hex: document.getElementById('homeFeatColor').value,
+            link_url: document.getElementById('homeFeatLink').value || null
         };
         
         const res = id

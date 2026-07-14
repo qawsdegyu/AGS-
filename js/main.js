@@ -905,8 +905,7 @@ async function loadHomeFeaturesStrip() {
          iconHtml = iconHtml.replace(/currentColor/g, hex);
       }
 
-      return `
-        <div class="feature-item">
+      const contentHtml = `
           <div class="feature-item-icon" style="background:${bg};">
             ${iconHtml}
           </div>
@@ -914,8 +913,10 @@ async function loadHomeFeaturesStrip() {
             <strong>${feat.title}</strong>
             <span>${feat.subtitle}</span>
           </div>
-        </div>
       `;
+      return feat.link_url 
+        ? `<a href="${feat.link_url}" class="feature-item" style="text-decoration:none;color:inherit;cursor:pointer;">${contentHtml}</a>`
+        : `<div class="feature-item">${contentHtml}</div>`;
     }).join('<div style="width:1px;height:40px;background:var(--gray-200);flex-shrink:0;"></div>');
 
   } catch (error) {

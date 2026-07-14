@@ -1481,7 +1481,7 @@ body.drawer-is-open .nav-menu {
   .hero-stats { gap: var(--space-6); }
   #viewToggles { display: none !important; }
   body.cart-open .menu-toggle, body.cart-open .mobile-bottom-bar { display: none !important; }
-  .whatsapp-float { display: none !important; }
+  /* .whatsapp-float { display: none !important; } */
 }
 
 

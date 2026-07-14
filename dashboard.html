@@ -1598,6 +1598,10 @@
           <label class="form-label">اللون (Hex Code)</label>
           <input type="text" id="homeFeatColor" class="form-control" required placeholder="#1565C0" />
         </div>
+        <div class="form-group" style="margin-bottom:var(--space-3);">
+          <label class="form-label">رابط عند الضغط (اختياري)</label>
+          <input type="url" id="homeFeatLink" class="form-control" placeholder="https://example.com/page" />
+        </div>
         <div style="display:flex;justify-content:flex-end;gap:var(--space-3);">
           <button type="button" class="btn btn-outline" onclick="closeHomeFeatureModal()">إلغاء</button>
           <button type="submit" class="btn btn-primary" id="homeFeatSaveBtn">حفظ الميزة</button>
@@ -1633,7 +1637,7 @@
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js?v=6"></script>
-  <script src="js/dashboard-supabase.js?v=7"></script>
+  <script src="js/dashboard-supabase.js?v=9"></script>
   <script>
     // Section Navigation
     function showSection(name, clickedLink) {
