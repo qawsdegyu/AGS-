@@ -388,7 +388,7 @@ async function loadDashboardOverview() {
                         datasets: [{ data: catKeys.map(k => catSales[k]), backgroundColor: catColors.slice(0, catKeys.length), borderWidth: 0 }]
                     },
                     options: {
-                        responsive: true, cutout: '70%',
+                        responsive: true, maintainAspectRatio: false, cutout: '70%',
                         plugins: { legend: { display: true, position: 'bottom', labels: { font: { family:'Cairo', size: 11 }, padding: 12 } } }
                     }
                 });
@@ -420,7 +420,7 @@ async function loadDashboardOverview() {
                     datasets: [{ data: Object.values(rfqStatusCounts), backgroundColor: ['#FFD600','#FF6B00','#00C853','#F44336'], borderRadius: 6 }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: { beginAtZero: true, ticks: { precision: 0, font:{family:'Cairo'} } },
