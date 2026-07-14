@@ -161,6 +161,9 @@
             <li class="nav-item">
               <a href="contact.html" class="nav-link">تواصل</a>
             </li>
+            <li class="nav-item">
+              <a href="profile.html#orders" class="nav-link">متابعة الطلبات</a>
+            </li>
           </ul>
         </div>
 
@@ -616,6 +619,13 @@
 
     loadRfqHistory(user.email);
     loadOrdersHistory(user.email);
+
+    if (window.location.hash === '#orders' || window.location.search.includes('tab=orders')) {
+      setTimeout(() => {
+        const ordersTabBtn = document.querySelector('[onclick="switchProfileTab(\\\'orders\\\', this)"]');
+        if(ordersTabBtn) switchProfileTab('orders', ordersTabBtn);
+      }, 100);
+    }
   });
 
   function switchProfileTab(tabId, btn) {
