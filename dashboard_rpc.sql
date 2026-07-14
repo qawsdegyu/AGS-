@@ -24,11 +24,25 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 2. إحصائيات المبيعات حسب الفئة (للرسم البياني الدائري - Donut Chart)
-CREATE OR REPLACE FUNCTION get_sales_by_category()
+CREATE OR REPLACE FUNCTION get_sales_by_category(period_filter text DEFAULT 'all')
 RETURNS JSONB AS $$
 DECLARE
   result JSONB;
+  start_date TIMESTAMP;
 BEGIN
+  -- تحديد فترة التاريخ
+  IF period_filter = 'today' THEN
+    start_date := date_trunc('day', now());
+  ELSIF period_filter = 'week' THEN
+    start_date := date_trunc('week', now());
+  ELSIF period_filter = 'month' THEN
+    start_date := date_trunc('month', now());
+  ELSIF period_filter = 'year' THEN
+    start_date := date_trunc('year', now());
+  ELSE
+    start_date := '1970-01-01'::timestamp; -- all time
+  END IF;
+
   SELECT jsonb_agg(
     jsonb_build_object(
       'category', t.category,
@@ -42,9 +56,11 @@ BEGIN
     FROM orders,
     jsonb_array_elements(items) AS item
     JOIN products p ON p.id = COALESCE(item->>'productId', item->>'product_id')::uuid
-    WHERE orders.status != 'ملغى'
+    WHERE orders.status != 'ملغى' AND orders.created_at >= start_date
     GROUP BY p.category
   ) t;
+
+  RETURN COALESCE(result, '[]'::jsonb);
 
   RETURN COALESCE(result, '[]'::jsonb);
 END;

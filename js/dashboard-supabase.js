@@ -121,6 +121,26 @@ async function loadDashboardOverview() {
             if (el) el.innerHTML = '<span style="display:inline-block;width:60px;height:20px;background:#E2E8F0;border-radius:4px;animation:pulse 1.5s infinite"></span>';
         });
 
+        let recentOrdersQuery = supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
+        let recentRfqsQuery = supabase.from('rfqs').select('*').order('created_at', { ascending: false }).limit(3);
+
+        if (period !== 'all') {
+            const now = new Date();
+            let startDate = new Date();
+            if (period === 'today') {
+                startDate.setHours(0,0,0,0);
+            } else if (period === 'week') {
+                startDate.setDate(now.getDate() - now.getDay());
+                startDate.setHours(0,0,0,0);
+            } else if (period === 'month') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            } else if (period === 'year') {
+                startDate = new Date(now.getFullYear(), 0, 1);
+            }
+            recentOrdersQuery = recentOrdersQuery.gte('created_at', startDate.toISOString());
+            recentRfqsQuery = recentRfqsQuery.gte('created_at', startDate.toISOString());
+        }
+
         const [
             { data: stats },
             { data: monthlyRevData },
@@ -131,9 +151,9 @@ async function loadDashboardOverview() {
         ] = await Promise.all([
             supabase.rpc('get_dashboard_stats', { period_filter: period }),
             supabase.rpc('get_monthly_revenue'),
-            supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5),
-            supabase.from('rfqs').select('*').order('created_at', { ascending: false }).limit(3),
-            supabase.rpc('get_sales_by_category'),
+            recentOrdersQuery,
+            recentRfqsQuery,
+            supabase.rpc('get_sales_by_category', { period_filter: period }),
             supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['جديد', 'بانتظار التأكيد', 'قيد المراجعة'])
         ]);
 
@@ -2998,6 +3018,13 @@ async function loadDashboardInspections() {
         if (error) throw error;
         window._inspectionsList = inspections || [];
         sortInspections();
+
+        const badge = document.getElementById('nav-badge-inspections');
+        const pendingCount = inspections.filter(i => i.status === 'قيد المراجعة').length;
+        if (badge) {
+            badge.textContent = pendingCount;
+            badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+        }
     } catch (err) {
         console.error('Error loading inspections:', err);
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;padding:1rem;">${err.message}</td></tr>`;
@@ -3168,18 +3195,6 @@ window.printInspections = function() {
     printWin.document.close();
     printWin.focus();
     setTimeout(() => { printWin.print(); printWin.close(); }, 250);
-}
-        
-        const badge = document.getElementById('nav-badge-inspections');
-        const pendingCount = inspections.filter(i => i.status === 'قيد المراجعة').length;
-        if (badge) {
-            badge.textContent = pendingCount;
-            badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
-        }
-    } catch (err) {
-        tbody.innerHTML = emptyStateRow(7, 'حدث خطأ في تحميل المواعيد');
-        console.error(err);
-    }
 }
 
 window.showInspectionDetails = function(index) {
