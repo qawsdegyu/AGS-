@@ -1620,7 +1620,7 @@ async function loadDashboardAnalytics() {
             { data: productsData, error: err2 }
         ] = await Promise.all([
             ordersQuery,
-            supabase.from('products').select('id, name, category, title')
+            supabase.from('products').select('id, name, category')
         ]);
 
         if (err1 || err2) {
