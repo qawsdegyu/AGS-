@@ -405,7 +405,9 @@
 
       if (error) {
         err.style.display = 'block';
-        err.textContent = 'بيانات الدخول غير صحيحة أو الحساب غير موجود';
+        err.textContent = error.message === 'Invalid login credentials' 
+            ? 'بيانات الدخول غير صحيحة أو الحساب غير موجود' 
+            : 'حدث خطأ: ' + error.message;
         btn.disabled = false;
         btnText.textContent = 'دخول';
       } else {
