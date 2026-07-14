@@ -1692,7 +1692,7 @@ async function loadDashboardAnalytics() {
                     datasets: [{ label: 'الإيرادات (د.أ)', data: monthlyRev.slice(Math.max(0, cm - 5), cm + 1), backgroundColor: '#1565C0', borderRadius: 4 }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend:{display:false} },
                     scales: {
                         y: { beginAtZero: true, ticks: { font:{family:'Cairo'}, callback: v => v.toLocaleString('en-US') } },
@@ -1710,7 +1710,7 @@ async function loadDashboardAnalytics() {
                         datasets: [{ data: categorySales.map(c => c.revenue), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
                     },
                     options: {
-                        responsive: true, cutout: '65%',
+                        responsive: true, maintainAspectRatio: false, cutout: '65%',
                         plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } }
                     }
                 });
@@ -1719,7 +1719,7 @@ async function loadDashboardAnalytics() {
                 const ctx = document.getElementById('analyticsCategoryChart');
                 if (ctx) {
                     const parent = ctx.parentElement;
-                    parent.innerHTML = '<div style="display:flex;height:100%;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
+                    parent.innerHTML = '<div class="chart-card-title" style="margin-bottom:var(--space-4);">المبيعات حسب الفئة</div><div style="display:flex;min-height:200px;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
                 }
             }
             // Fetch page_views for tracking charts
@@ -1760,7 +1760,7 @@ async function loadDashboardAnalytics() {
                         datasets: [{ label: 'الزيارات', data: visitorsCount, borderColor: '#1565C0', backgroundColor: 'rgba(21, 101, 192, 0.1)', fill: true, tension: 0.4 }]
                     },
                     options: {
-                        responsive: true,
+                        responsive: true, maintainAspectRatio: false,
                         plugins: { legend:{display:false} },
                         scales: { y: { beginAtZero: true, ticks: { font:{family:'Cairo'} } }, x: { ticks:{font:{family:'Cairo'}} } }
                     }
@@ -1780,13 +1780,13 @@ async function loadDashboardAnalytics() {
                             labels: sourceLabels,
                             datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
                         },
-                        options: { responsive: true, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
                     });
                 } else {
                     const ctx = document.getElementById('analyticsSourceChart');
                     if (ctx) {
                         const parent = ctx.parentElement;
-                        parent.innerHTML = '<div style="display:flex;height:100%;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
+                        parent.innerHTML = '<div class="chart-card-title" style="margin-bottom:var(--space-4);">مصادر الزيارات</div><div style="display:flex;min-height:200px;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
                     }
                 }
 
