@@ -933,7 +933,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ==============================
      ANALYTICS TRACKING
      ============================== */
-  if (typeof sc !== 'undefined') {
+  if (typeof window.supabaseClient !== 'undefined') {
       try {
           let sessionId = sessionStorage.getItem('visitor_session_id');
           if (!sessionId) {
@@ -959,7 +959,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               productId = urlParams.get('id');
           }
 
-          const { error } = await sc.from('page_views').insert([{
+          const { error } = await window.supabaseClient.from('page_views').insert([{
               page_url: window.location.pathname || '/',
               product_id: productId,
               source: source,
