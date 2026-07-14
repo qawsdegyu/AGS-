@@ -1620,7 +1620,7 @@ async function loadDashboardAnalytics() {
             { data: productsData, error: err2 }
         ] = await Promise.all([
             ordersQuery,
-            supabase.from('products').select('id, name, category')
+            supabase.from('products').select('id, title, category')
         ]);
 
         if (err1 || err2) {
@@ -1655,7 +1655,7 @@ async function loadDashboardAnalytics() {
                             catSalesMap[cat] = (catSalesMap[cat] || 0) + rev;
 
                             if (!productSales[pid]) {
-                                productSales[pid] = { name: p.name || p.title, category: cat, qty: 0, revenue: 0 };
+                                productSales[pid] = { name: p.title || p.name || 'منتج غير معروف', category: cat, qty: 0, revenue: 0 };
                             }
                             productSales[pid].qty += qty;
                             productSales[pid].revenue += rev;
@@ -1804,9 +1804,9 @@ async function loadDashboardAnalytics() {
                     if (sortedProductIds.length === 0) {
                         topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات منتجات بعد');
                     } else {
-                        const { data: productsData } = await supabase.from('products').select('id, name').in('id', sortedProductIds);
+                        const { data: productsData } = await supabase.from('products').select('id, title').in('id', sortedProductIds);
                         const productNames = {};
-                        if (productsData) productsData.forEach(p => productNames[p.id] = p.name);
+                        if (productsData) productsData.forEach(p => productNames[p.id] = p.title);
                         
                         topViewedTbody.innerHTML = sortedProductIds.map(pid => `
                             <tr>
