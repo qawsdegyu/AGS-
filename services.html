@@ -896,8 +896,8 @@
                     <div class="service-item" style="border: 1px solid var(--gray-200); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                         <button onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'; this.querySelector('.chevron').style.transform = this.nextElementSibling.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0)';" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 16px; background: transparent; border: none; cursor: pointer; text-align: right; transition: background 0.2s;">
                             <div style="display:flex; align-items:center; gap: 16px;">
-                                <div style="width:48px; height:48px; border-radius:12px; background:${theme.bg}; display:flex; align-items:center; justify-content:center;">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${theme.color}" stroke-width="2">${theme.svg}</svg>
+                                <div style="width:48px; height:48px; border-radius:12px; background:${theme.bg}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                                    ${s.icon_url ? `<img src="${s.icon_url}" style="width:28px;height:28px;object-fit:contain;" />` : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${theme.color}" stroke-width="2">${theme.svg}</svg>`}
                                 </div>
                                 <span style="font-weight: 800; font-size: 16px; color: var(--dark-800);">${s.title}</span>
                             </div>

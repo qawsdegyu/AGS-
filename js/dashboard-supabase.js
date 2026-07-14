@@ -702,7 +702,12 @@ async function loadDashboardServices() {
         
         tbody.innerHTML = services.map(s => `
             <tr>
-                <td style="font-weight:700;color:var(--dark-800);">${s.title}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        ${s.icon_url ? `<img src="${s.icon_url}" style="width:24px;height:24px;object-fit:contain;border-radius:4px;border:1px solid var(--gray-200);" />` : ''}
+                        <span style="font-weight:700;color:var(--dark-800);">${s.title}</span>
+                    </div>
+                </td>
                 <td style="color:var(--primary-600);">${s.category || 'فحوصات بيئة العمل'}</td>
                 <td style="color:var(--gray-600);">${s.title_en || '-'}</td>
                 <td style="font-weight:700;">${s.price_starts_at ? (s.discount_percentage > 0 ? `<span style="text-decoration:line-through;color:var(--gray-500);font-size:0.9em;margin-left:4px;">${s.price_starts_at} د.أ</span><br><span style="color:var(--primary-600);">${(s.price_starts_at * (1 - s.discount_percentage/100)).toFixed(2)} د.أ</span> <span style="font-size:10px;color:white;background:var(--red-500);padding:2px 4px;border-radius:4px;">-${s.discount_percentage}%</span>` : s.price_starts_at + ' د.أ') : '-'}</td>
@@ -734,6 +739,10 @@ async function deleteService(id) {
 function openServiceModal() {
     document.getElementById('serviceForm').reset();
     document.getElementById('srvId').value = '';
+    document.getElementById('srvExistingIconUrl').value = '';
+    document.getElementById('srvIconFile').value = '';
+    document.getElementById('srvIconPreviewContainer').style.display = 'none';
+    document.getElementById('srvIconPreview').src = '';
     document.getElementById('serviceModalTitle').textContent = 'إضافة خدمة جديدة';
     document.getElementById('serviceModal').style.display = 'flex';
 }
@@ -753,6 +762,16 @@ async function editService(id) {
         document.getElementById('srvDesc').value = data.description || '';
         document.getElementById('srvFeatures').value = (data.features || []).join(', ');
         
+        document.getElementById('srvExistingIconUrl').value = data.icon_url || '';
+        document.getElementById('srvIconFile').value = '';
+        if (data.icon_url) {
+            document.getElementById('srvIconPreview').src = data.icon_url;
+            document.getElementById('srvIconPreviewContainer').style.display = 'flex';
+        } else {
+            document.getElementById('srvIconPreview').src = '';
+            document.getElementById('srvIconPreviewContainer').style.display = 'none';
+        }
+        
         document.getElementById('serviceModalTitle').textContent = 'تعديل الخدمة';
         document.getElementById('serviceModal').style.display = 'flex';
     } catch (err) { showToast('خطأ', 'تعذر جلب تفاصيل الخدمة', 'error'); }
@@ -768,6 +787,18 @@ async function saveService(e) {
         const priceVal = document.getElementById('srvPrice').value;
         const featuresStr = document.getElementById('srvFeatures').value;
         
+        const fileInput = document.getElementById('srvIconFile');
+        const existingIconUrl = document.getElementById('srvExistingIconUrl').value;
+        
+        let finalIconUrl = existingIconUrl;
+        
+        if (fileInput.files && fileInput.files.length > 0) {
+            const urls = await uploadMediaFiles(fileInput.files);
+            if (urls && urls.length > 0) {
+                finalIconUrl = urls[0];
+            }
+        }
+        
         const payload = {
             category: document.getElementById('srvCategory').value,
             title: document.getElementById('srvTitle').value,
@@ -776,7 +807,8 @@ async function saveService(e) {
             price_starts_at: priceVal ? parseFloat(priceVal) : null,
             discount_percentage: parseFloat(document.getElementById('srvDiscount').value) || 0,
             theme_color: document.getElementById('srvColor').value,
-            features: featuresStr ? featuresStr.split(',').map(s => s.trim()).filter(Boolean) : []
+            features: featuresStr ? featuresStr.split(',').map(s => s.trim()).filter(Boolean) : [],
+            icon_url: finalIconUrl ? finalIconUrl : null
         };
         
         const res = id
@@ -3239,3 +3271,34 @@ window.deleteInspection = async function(id) {
 
 // Add load call to the global init
 setTimeout(loadDashboardInspections, 1500);
+
+function setDefaultDates() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const fromStr = `${yyyy}-${mm}-01`;
+    
+    const dateInputs = [
+        'analytics-date-from', 'analytics-date-to',
+        'orders-date-from', 'orders-date-to',
+        'rfqs-date-from', 'rfqs-date-to',
+        'payments-date-from', 'payments-date-to',
+        'inspections-date-from', 'inspections-date-to'
+    ];
+    
+    dateInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (id.endsWith('-from') && !el.value) {
+                el.value = fromStr;
+            } else if (id.endsWith('-to') && !el.value) {
+                el.value = todayStr;
+            }
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', setDefaultDates);
+setTimeout(setDefaultDates, 500);
