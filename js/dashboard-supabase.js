@@ -1807,7 +1807,31 @@ async function loadDashboardAnalytics() {
                     }
                 }
 
-                // 3. Top Viewed Products
+                // 3. Traffic Sources
+                const sources = {};
+                pageViewsData.forEach(pv => {
+                    const s = pv.source || 'Direct';
+                    sources[s] = (sources[s] || 0) + 1;
+                });
+                if (Object.keys(sources).length > 0) {
+                    const sourceLabels = Object.keys(sources).map(key => `${key} (${sources[key]} زائر)`);
+                    getOrCreateChart('analyticsSourceChart', {
+                        type: 'doughnut',
+                        data: {
+                            labels: sourceLabels,
+                            datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
+                    });
+                } else {
+                    const ctx = document.getElementById('analyticsSourceChart');
+                    if (ctx) {
+                        const parent = ctx.parentElement;
+                        parent.innerHTML = '<div class="chart-card-title" style="margin-bottom:var(--space-4);">مصادر الزيارات</div><div style="display:flex;min-height:200px;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
+                    }
+                }
+
+                // 4. Top Viewed Products
                 const productViews = {};
                 pageViewsData.forEach(pv => {
                     if (pv.product_id) {
