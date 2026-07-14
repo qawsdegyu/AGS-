@@ -1720,6 +1720,34 @@ function renderCustomers() {
     const sortVal = sortSelect ? sortSelect.value : 'date-desc';
     
     let sorted = [...window.allCustomers];
+
+    const nameFilter = document.getElementById('customers-name-filter') ? document.getElementById('customers-name-filter').value.toLowerCase() : '';
+    const fromDate = document.getElementById('customers-date-from') ? document.getElementById('customers-date-from').value : '';
+    const toDate = document.getElementById('customers-date-to') ? document.getElementById('customers-date-to').value : '';
+
+    if (nameFilter) {
+        sorted = sorted.filter(c => 
+            (c.company_name && c.company_name.toLowerCase().includes(nameFilter)) || 
+            (c.contact_person && c.contact_person.toLowerCase().includes(nameFilter))
+        );
+    }
+    if (fromDate) {
+        sorted = sorted.filter(c => new Date(c.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        sorted = sorted.filter(c => new Date(c.created_at) <= toD);
+    }
+
+    if (sorted.length === 0) {
+        listBody.innerHTML = emptyStateRow(5, 'لا يوجد عملاء مطابقين للبحث');
+        window._filteredCustomersCount = 0;
+        return;
+    }
+    
+    window._filteredCustomersCount = sorted.length;
+
     if (sortVal === 'date-desc') {
         sorted.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     } else if (sortVal === 'date-asc') {
@@ -1766,7 +1794,7 @@ window.printCustomers = function() {
         </head>
         <body>
             <h2>كشف بيانات العملاء المسجلين</h2>
-            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد العملاء: ${window.allCustomers.length}</div>
+            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد العملاء: ${window._filteredCustomersCount || window.allCustomers.length}</div>
             <table>
                 <thead>
                     <tr>
@@ -2316,6 +2344,31 @@ function renderInvoices() {
     const sortVal = sortSelect ? sortSelect.value : 'date-desc';
     
     let sorted = [...window.allInvoices];
+
+    const nameFilter = document.getElementById('payments-name-filter') ? document.getElementById('payments-name-filter').value.toLowerCase() : '';
+    const fromDate = document.getElementById('payments-date-from') ? document.getElementById('payments-date-from').value : '';
+    const toDate = document.getElementById('payments-date-to') ? document.getElementById('payments-date-to').value : '';
+
+    if (nameFilter) {
+        sorted = sorted.filter(o => o.customer_name && o.customer_name.toLowerCase().includes(nameFilter));
+    }
+    if (fromDate) {
+        sorted = sorted.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        sorted = sorted.filter(o => new Date(o.created_at) <= toD);
+    }
+
+    if (sorted.length === 0) {
+        tbody.innerHTML = emptyStateRow(6, 'لا توجد فواتير مطابقة للبحث');
+        window._filteredInvoicesCount = 0;
+        return;
+    }
+
+    window._filteredInvoicesCount = sorted.length;
+
     if (sortVal === 'date-desc') {
         sorted.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     } else if (sortVal === 'date-asc') {
@@ -2369,7 +2422,7 @@ window.printPayments = function() {
         </head>
         <body>
             <h2>كشف المدفوعات والفواتير</h2>
-            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد الحركات: ${window.allInvoices.length}</div>
+            <div class="meta">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - عدد الحركات: ${window._filteredInvoicesCount || window.allInvoices.length}</div>
             <table>
                 <thead>
                     <tr>
@@ -2381,15 +2434,7 @@ window.printPayments = function() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${window.allInvoices.map(order => `
-                        <tr>
-                            <td style="font-weight:700;">${(order.id||'').includes('-') ? '#' + order.id.split('-')[0] : order.id}</td>
-                            <td>${order.customer_name || '-'}</td>
-                            <td style="font-weight:bold;">${(parseFloat(order.total_amount)||0).toLocaleString('en-US')} د.أ</td>
-                            <td>${new Date(order.created_at).toLocaleDateString('en-US')}</td>
-                            <td style="max-width:250px;word-break:break-all;font-size:12px;white-space:pre-wrap;line-height:1.4;">${order.payment_status || '-'}</td>
-                        </tr>
-                    `).join('')}
+                    ${document.getElementById('invoices-list').innerHTML}
                 </tbody>
             </table>
             <script>

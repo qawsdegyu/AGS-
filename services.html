@@ -254,14 +254,14 @@
         </div>
         <h1
           style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#FFFFFF;line-height:1.2;margin-bottom:var(--space-4);">
-          خدمات فحص <span style="color:#FF6B00;">بيئة العمل</span><br />بمعايير دولية معتمدة
+          خدمات وفحوصات <span style="color:#FF6B00;">بيئة العمل</span><br />بمعايير دولية معتمدة
         </h1>
         <p style="font-size:var(--text-lg);color:#E2E8F0;margin-bottom:var(--space-8);line-height:1.8;">
           فريق متخصص من المهندسين يقيس ويحلل بيئة العمل في منشأتك — إضاءة، ضوضاء، جودة هواء، حرارة — مع تقارير رسمية
           تساعدك على الامتثال للمعايير الوطنية والدولية.
         </p>
         <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;">
-          <a href="#booking" class="btn btn-accent btn-lg" style="background:#FF6B00;border-color:#FF6B00;color:#FFFFFF;">احجز موعد فحص الآن</a>
+          <a href="#booking" class="btn btn-accent btn-lg" style="background:#FF6B00;border-color:#FF6B00;color:#FFFFFF;">احجز موعد الآن</a>
           <a href="#services" class="btn btn-hero-outline btn-lg">تعرف على خدماتنا</a>
         </div>
       </div>
@@ -354,13 +354,13 @@
     <div class="container">
       <div class="section-header reveal">
         <div class="section-badge" style="background:#E6F0FA;color:#0F2C59;border:none;">📅 احجز موعدك</div>
-        <h2 class="section-title" style="color:#0F2C59;font-weight:900;">احجز موعد <span style="color:#FF6B00;">فحص</span> بيئة العمل</h2>
+        <h2 class="section-title" style="color:#0F2C59;font-weight:900;">احجز <span style="color:#FF6B00;">موعد</span></h2>
         <p class="section-subtitle" style="color:#718096;">سنتواصل معك خلال ساعة عمل لتأكيد الموعد وتحديد التفاصيل</p>
       </div>
 
       <div class="booking-card reveal">
         <div class="booking-card-header">
-          <h3>نموذج حجز موعد الفحص</h3>
+          <h3>نموذج حجز موعد</h3>
           <p>أكمل البيانات وسنتواصل معك لتأكيد الموعد المناسب</p>
         </div>
         <div class="booking-card-body">
@@ -923,10 +923,9 @@
                 `;
             }).join('');
 
-            // Only expand the first category by default
-            const isFirst = index === 0;
-            const displayStyle = isFirst ? 'block' : 'none';
-            const rotateTransform = isFirst ? 'rotate(180deg)' : 'rotate(0)';
+            // Make all categories closed by default
+            const displayStyle = 'none';
+            const rotateTransform = 'rotate(0)';
 
             html += `
                 <div class="category-accordion">

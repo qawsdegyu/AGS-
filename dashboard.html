@@ -828,7 +828,14 @@
           <div class="data-table-card">
             <div class="data-table-header">
               <div class="chart-card-title">إدارة العملاء</div>
-              <div style="display:flex;gap:10px;">
+              <div style="display:flex;gap:10px; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="customers-name-filter" class="form-control" placeholder="بحث بالاسم أو جهة الاتصال..." style="width:200px; padding:6px 10px; font-size:12px;" oninput="sortCustomers()">
+                <div style="display:flex; gap:5px; align-items:center;">
+                  <span style="font-size:12px; color:var(--gray-600);">من:</span>
+                  <input type="date" id="customers-date-from" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="sortCustomers()">
+                  <span style="font-size:12px; color:var(--gray-600);">إلى:</span>
+                  <input type="date" id="customers-date-to" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="sortCustomers()">
+                </div>
                 <select id="customers-sort-select" class="form-input" style="width:auto; padding:8px; border-radius:var(--radius-lg); font-size:12px; cursor:pointer;" onchange="sortCustomers()">
                   <option value="date-desc">التاريخ (الأحدث)</option>
                   <option value="date-asc">التاريخ (الأقدم)</option>
@@ -936,6 +943,7 @@
             <div class="data-table-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div class="chart-card-title">المدفوعات والفواتير</div>
               <div style="display:flex;gap:10px; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="payments-name-filter" class="form-control" placeholder="بحث باسم العميل..." style="width:200px; padding:6px 10px; font-size:12px;" oninput="sortPayments()">
                 <div style="display:flex; gap:5px; align-items:center;">
                   <span style="font-size:12px; color:var(--gray-600);">من:</span>
                   <input type="date" id="payments-date-from" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="sortPayments()">

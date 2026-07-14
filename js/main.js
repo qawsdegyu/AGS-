@@ -435,6 +435,20 @@ document.getElementById('cartBtn')?.addEventListener('click', (e) => {
   toggleCart();
 });
 
+// Intercept "Convert to Quote" buttons to pass from_cart parameter
+document.addEventListener('click', e => {
+  const target = e.target.closest('a');
+  if (target && target.getAttribute('href') === 'rfq.html' && target.textContent.includes('تحويل لعرض سعر')) {
+      e.preventDefault();
+      // Only append if not empty
+      if (cartItems.length > 0) {
+          window.location.href = 'rfq.html?from_cart=1';
+      } else {
+          window.location.href = 'rfq.html';
+      }
+  }
+});
+
 async function checkoutCart(e) {
   e.preventDefault();
   

@@ -960,15 +960,65 @@
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // Populate datalist with products from database
+      let optionsHtml = '';
       if (window.fetchProducts) {
         const products = await fetchProducts('all');
         const datalist = document.getElementById('dbProductsList');
         if (products.length > 0) {
-          const optionsHtml = products.map(p => `<option value="${p.title}">${p.brand ? p.brand + ' - ' : ''}${p.title}</option>`).join('');
+          optionsHtml = products.map(p => `<option value="${p.title}">${p.brand ? p.brand + ' - ' : ''}${p.title}</option>`).join('');
           if (datalist) datalist.innerHTML = optionsHtml;
           document.querySelectorAll('select.prod-name-input').forEach(select => {
             select.innerHTML += optionsHtml;
           });
+        }
+      }
+
+      // Check if coming from cart
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('from_cart') === '1') {
+        try {
+          const savedCart = localStorage.getItem('checkoutCart');
+          if (savedCart) {
+            const cartItems = JSON.parse(savedCart);
+            if (cartItems && cartItems.length > 0) {
+               const list = document.getElementById('rfqProductsList');
+               list.innerHTML = ''; 
+               rowCount = 0;
+               cartItems.forEach(item => {
+                  rowCount++;
+                  const row = document.createElement('div');
+                  row.className = 'rfq-product-item';
+                  row.id = `product-row-${rowCount}`;
+                  row.style.cssText = 'flex-direction:column; align-items:stretch; gap:var(--space-3); animation: fadeInUp 0.3s ease;';
+                  row.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                      <div style="font-size:var(--text-sm);color:var(--gray-400);font-weight:600;">منتج رقم ${rowCount}</div>
+                      <button type="button" onclick="removeProductRow(${rowCount})" style="color:var(--danger);background:none;border:none;cursor:pointer;padding:var(--space-1);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                      </button>
+                    </div>
+                    <div style="width:100%;">
+                      <select class="form-control prod-name-input" style="margin-bottom:0;" required>
+                        <option value="" disabled>اسم المنتج أو رقم الكود (SKU)...</option>
+                        <option value="${item.name}" selected>${item.brand ? item.brand + ' - ' : ''}${item.name}</option>
+                        ${optionsHtml}
+                      </select>
+                    </div>
+                    <div class="qty-container" style="width:100%;display:block;">
+                      <input type="number" class="form-control prod-qty-input" style="margin-bottom:0;width:100%;" placeholder="الكمية" min="1" value="${item.qty}" required />
+                    </div>
+                    <div class="unit-container" style="width:100%;display:block;">
+                      <select class="form-control prod-unit-input" style="margin-bottom:0;width:100%;">
+                        <option selected>قطعة</option><option>مجموعة</option><option>طقم</option><option>كرتون</option>
+                      </select>
+                    </div>
+                  `;
+                  list.appendChild(row);
+               });
+            }
+          }
+        } catch (e) {
+          console.error("Error loading cart to RFQ:", e);
         }
       }
     });
