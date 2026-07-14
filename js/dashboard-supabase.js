@@ -1821,9 +1821,9 @@ async function loadDashboardAnalytics() {
                     if (sortedProductIds.length === 0) {
                         topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات منتجات بعد');
                     } else {
-                        const { data: productsData } = await supabase.from('products').select('id, title').in('id', sortedProductIds);
+                        const { data: productsData } = await supabase.from('products').select('id, name').in('id', sortedProductIds);
                         const productNames = {};
-                        if (productsData) productsData.forEach(p => productNames[p.id] = p.title);
+                        if (productsData) productsData.forEach(p => productNames[p.id] = p.name);
                         
                         topViewedTbody.innerHTML = sortedProductIds.map(pid => `
                             <tr>
