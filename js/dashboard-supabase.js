@@ -1061,6 +1061,18 @@ window.filterAndSortOrders = function() {
         filtered = filtered.filter(o => o.status === statusFilter || (statusFilter === 'قيد المراجعة' && o.status === 'بانتظار التأكيد') || (statusFilter === 'تم التسليم' && o.status === 'مكتمل'));
     }
     
+    // Date Filter
+    const fromDate = document.getElementById('orders-date-from') ? document.getElementById('orders-date-from').value : '';
+    const toDate = document.getElementById('orders-date-to') ? document.getElementById('orders-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
+    }
+    
     // Sort
     const sortVal = document.getElementById('orders-sort') ? document.getElementById('orders-sort').value : 'newest';
     if (sortVal === 'newest') {
@@ -1138,6 +1150,17 @@ window.printOrders = function() {
     const statusFilter = document.getElementById('orders-status-filter') ? document.getElementById('orders-status-filter').value : 'all';
     if (statusFilter !== 'all') {
         filtered = filtered.filter(o => o.status === statusFilter || (statusFilter === 'قيد المراجعة' && o.status === 'بانتظار التأكيد') || (statusFilter === 'تم التسليم' && o.status === 'مكتمل'));
+    }
+    
+    const fromDate = document.getElementById('orders-date-from') ? document.getElementById('orders-date-from').value : '';
+    const toDate = document.getElementById('orders-date-to') ? document.getElementById('orders-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
     }
     
     const sortVal = document.getElementById('orders-sort') ? document.getElementById('orders-sort').value : 'newest';
@@ -1278,34 +1301,173 @@ async function loadDashboardRFQs() {
         if (error) throw error;
         if (!rfqsData || rfqsData.length === 0) { tbody.innerHTML = emptyStateRow(7, 'لا توجد عروض أسعار حتى الآن'); return; }
 
-        // Sort: put completed at the bottom
-        const rfqs = rfqsData.sort((a, b) => (a.status === 'مكتمل' ? 1 : 0) - (b.status === 'مكتمل' ? 1 : 0));
-        window._rfqsList = rfqs;
-
-        tbody.innerHTML = rfqs.map((rfq, index) => `
-            <tr style="${rfq.status === 'مكتمل' ? 'opacity:0.6;background:var(--gray-50);' : ''}">
-                <td style="font-weight:700;color:var(--accent-600);">#${rfq.id.split('-')[0]}</td>
-                <td>${rfq.company_name || '-'}</td>
-                <td>${rfq.contact_person || '-'}</td>
-                <td dir="ltr" style="text-align:right;">${rfq.phone || '-'}</td>
-                <td>
-                    <select onchange="changeRFQStatus('${rfq.id}', this.value)" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;background:white;">
-                        <option value="انتظار" ${rfq.status === 'انتظار' || !rfq.status ? 'selected' : ''}>انتظار</option>
-                        <option value="غير مكتمل" ${rfq.status === 'غير مكتمل' ? 'selected' : ''}>غير مكتمل</option>
-                        <option value="مكتمل" ${rfq.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
-                    </select>
-                </td>
-                <td>${new Date(rfq.created_at).toLocaleDateString('en-US')}</td>
-                <td>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                        <button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 8px;" onclick="showRFQModal(${index})">تفاصيل</button>
-                    </div>
-                </td>
-            </tr>`).join('');
+        window._rfqsList = rfqsData || [];
+        sortRfqs();
     } catch (err) {
         console.error('Error loading RFQs:', err);
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;padding:1rem;">${err.message} <button onclick="loadDashboardRFQs()" style="cursor:pointer;">إعادة المحاولة</button></td></tr>`;
     }
+}
+
+window.sortRfqs = function() {
+    if (!window._rfqsList) return;
+    let filtered = [...window._rfqsList];
+    
+    const fromDate = document.getElementById('rfqs-date-from') ? document.getElementById('rfqs-date-from').value : '';
+    const toDate = document.getElementById('rfqs-date-to') ? document.getElementById('rfqs-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
+    }
+    
+    const sortVal = document.getElementById('rfq-sort') ? document.getElementById('rfq-sort').value : 'newest';
+    if (sortVal === 'newest') {
+        filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'oldest') {
+        filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'company_asc') {
+        filtered.sort((a,b) => (a.company_name||'').localeCompare(b.company_name||'', 'ar'));
+    } else if (sortVal === 'company_desc') {
+        filtered.sort((a,b) => (b.company_name||'').localeCompare(a.company_name||'', 'ar'));
+    }
+
+    if (sortVal === 'newest' || sortVal === 'oldest') {
+        filtered.sort((a, b) => (a.status === 'مكتمل' ? 1 : 0) - (b.status === 'مكتمل' ? 1 : 0));
+    }
+    
+    renderRfqs(filtered);
+};
+
+function renderRfqs(rfqs) {
+    const tbody = document.querySelector('#section-rfqs .data-table tbody');
+    if (!tbody) return;
+    if (!rfqs || rfqs.length === 0) {
+        tbody.innerHTML = emptyStateRow(7, 'لا توجد عروض أسعار مطابقة');
+        return;
+    }
+    tbody.innerHTML = rfqs.map((rfq, index) => `
+        <tr style="${rfq.status === 'مكتمل' ? 'opacity:0.6;background:var(--gray-50);' : ''}">
+            <td style="font-weight:700;color:var(--accent-600);">#${rfq.id.split('-')[0]}</td>
+            <td>${rfq.company_name || '-'}</td>
+            <td>${rfq.contact_person || '-'}</td>
+            <td dir="ltr" style="text-align:right;">${rfq.phone || '-'}</td>
+            <td>
+                <select onchange="changeRFQStatus('${rfq.id}', this.value)" style="padding:4px;border:1px solid var(--gray-200);border-radius:4px;font-family:'Cairo',sans-serif;font-size:12px;background:white;">
+                    <option value="انتظار" ${rfq.status === 'انتظار' || !rfq.status ? 'selected' : ''}>انتظار</option>
+                    <option value="غير مكتمل" ${rfq.status === 'غير مكتمل' ? 'selected' : ''}>غير مكتمل</option>
+                    <option value="مكتمل" ${rfq.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
+                </select>
+            </td>
+            <td>${new Date(rfq.created_at).toLocaleDateString('en-US')}</td>
+            <td class="no-print">
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <!-- Original logic was using array index of original list, so we might need to find the real index or just use the id in showRFQModal, but unfortunately showRFQModal uses index. Let's pass the real index by searching window._rfqsList -->
+                    <button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 8px;" onclick="showRFQModal(window._rfqsList.findIndex(r => r.id === '${rfq.id}'))">تفاصيل</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.printRfqs = function() {
+    if (!window._rfqsList || window._rfqsList.length === 0) {
+        showToast('تنبيه', 'لا يوجد عروض أسعار للطباعة', 'info');
+        return;
+    }
+    
+    let filtered = [...window._rfqsList];
+    const fromDate = document.getElementById('rfqs-date-from') ? document.getElementById('rfqs-date-from').value : '';
+    const toDate = document.getElementById('rfqs-date-to') ? document.getElementById('rfqs-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
+    }
+    
+    const sortVal = document.getElementById('rfq-sort') ? document.getElementById('rfq-sort').value : 'newest';
+    if (sortVal === 'newest') {
+        filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'oldest') {
+        filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'company_asc') {
+        filtered.sort((a,b) => (a.company_name||'').localeCompare(b.company_name||'', 'ar'));
+    } else if (sortVal === 'company_desc') {
+        filtered.sort((a,b) => (b.company_name||'').localeCompare(a.company_name||'', 'ar'));
+    }
+
+    if (sortVal === 'newest' || sortVal === 'oldest') {
+        filtered.sort((a, b) => (a.status === 'مكتمل' ? 1 : 0) - (b.status === 'مكتمل' ? 1 : 0));
+    }
+
+    let html = `
+        <html dir="rtl">
+        <head>
+            <title>كشف عروض الأسعار (RFQ)</title>
+            <style>
+                body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 20px; color: #333; }
+                h2 { text-align: center; color: #0F2C59; margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: right; font-size: 14px; }
+                th { background-color: #f8f9fa; color: #0F2C59; }
+                .status-pending { color: #854d0e; font-weight: bold; }
+                .status-success { color: #166534; font-weight: bold; }
+                .status-failed { color: #991b1b; font-weight: bold; }
+                @media print {
+                    @page { margin: 1.5cm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>كشف عروض الأسعار (RFQ)</h2>
+            <div style="text-align:left; font-size:12px; color:#666; margin-bottom:10px;">تاريخ الطباعة: ${new Date().toLocaleDateString('en-US')} - عدد العروض: ${filtered.length}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم العرض</th>
+                        <th>الشركة</th>
+                        <th>شخص الاتصال</th>
+                        <th>الهاتف</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    filtered.forEach(rfq => {
+        let statClass = rfq.status === 'مكتمل' ? 'status-success' : rfq.status === 'غير مكتمل' ? 'status-failed' : 'status-pending';
+        html += `
+            <tr>
+                <td style="font-weight:bold;">#${rfq.id.split('-')[0]}</td>
+                <td>${rfq.company_name || '-'}</td>
+                <td>${rfq.contact_person || '-'}</td>
+                <td dir="ltr" style="text-align:right;">${rfq.phone || '-'}</td>
+                <td><span class="${statClass}">${rfq.status || 'انتظار'}</span></td>
+                <td>${new Date(rfq.created_at).toLocaleDateString('en-US')}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 250);
 }
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
@@ -1392,7 +1554,18 @@ async function loadDashboardAnalytics() {
                 }
             }
             // Fetch page_views for tracking charts
-            const { data: pageViewsData, error: pvError } = await supabase.from('page_views').select('*');
+            let pvQuery = supabase.from('page_views').select('*');
+            const analyticsFrom = document.getElementById('analytics-date-from') ? document.getElementById('analytics-date-from').value : '';
+            const analyticsTo = document.getElementById('analytics-date-to') ? document.getElementById('analytics-date-to').value : '';
+            if (analyticsFrom) {
+                pvQuery = pvQuery.gte('created_at', analyticsFrom);
+            }
+            if (analyticsTo) {
+                const toD = new Date(analyticsTo);
+                toD.setHours(23, 59, 59, 999);
+                pvQuery = pvQuery.lte('created_at', toD.toISOString());
+            }
+            const { data: pageViewsData, error: pvError } = await pvQuery;
             if (!pvError && pageViewsData) {
                 // 1. Visitors by Date
                 const visitorsByDate = {};
@@ -1425,10 +1598,11 @@ async function loadDashboardAnalytics() {
                     const s = pv.source || 'Direct';
                     sources[s] = (sources[s] || 0) + 1;
                 });
+                const sourceLabels = Object.keys(sources).map(key => `${key} (${sources[key]} زائر)`);
                 getOrCreateChart('analyticsSourceChart', {
                     type: 'doughnut',
                     data: {
-                        labels: Object.keys(sources),
+                        labels: sourceLabels,
                         datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
                     },
                     options: { responsive: true, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
@@ -2521,6 +2695,7 @@ window.showAddUserModal = function() {
 
 window.submitNewUser = async function() {
     const name = document.getElementById('new-user-name').value.trim();
+    const phone = document.getElementById('new-user-phone') ? document.getElementById('new-user-phone').value.trim() : '';
     const email = document.getElementById('new-user-email').value.trim();
     const password = document.getElementById('new-user-password').value;
     
@@ -2542,7 +2717,8 @@ window.submitNewUser = async function() {
         const { data, error } = await supabase.rpc('create_registered_user', {
             user_email: email,
             user_password: password,
-            user_name: name
+            user_name: name,
+            user_phone: phone
         });
         
         if(error) throw error;
@@ -2821,47 +2997,178 @@ async function loadDashboardInspections() {
         const { data: inspections, error } = await supabase.from('inspections').select('*').order('created_at', { ascending: false });
         if (error) throw error;
         window._inspectionsList = inspections || [];
-        
-        if (!inspections || inspections.length === 0) {
-            tbody.innerHTML = emptyStateRow(7, 'لا يوجد مواعيد فحص حالياً');
-            return;
-        }
+        sortInspections();
+    } catch (err) {
+        console.error('Error loading inspections:', err);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;padding:1rem;">${err.message}</td></tr>`;
+    }
+}
 
-        tbody.innerHTML = inspections.map((ins, idx) => {
-            let statusColor = 'var(--gray-500)';
-            if (ins.status === 'تم التأكيد') statusColor = 'var(--success)';
-            if (ins.status === 'قيد المراجعة') statusColor = 'var(--warning)';
-            if (ins.status === 'مكتمل') statusColor = 'var(--primary-600)';
+window.sortInspections = function() {
+    if (!window._inspectionsList) return;
+    let filtered = [...window._inspectionsList];
+    
+    const fromDate = document.getElementById('inspections-date-from') ? document.getElementById('inspections-date-from').value : '';
+    const toDate = document.getElementById('inspections-date-to') ? document.getElementById('inspections-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
+    }
+    
+    const sortVal = document.getElementById('inspections-sort-select') ? document.getElementById('inspections-sort-select').value : 'date-desc';
+    if (sortVal === 'date-desc') {
+        filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'date-asc') {
+        filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'name-asc') {
+        filtered.sort((a,b) => (a.customer_name||'').localeCompare(b.customer_name||'', 'ar'));
+    } else if (sortVal === 'name-desc') {
+        filtered.sort((a,b) => (b.customer_name||'').localeCompare(a.customer_name||'', 'ar'));
+    }
+    
+    renderInspections(filtered);
+};
 
-            return `
+function renderInspections(inspections) {
+    const tbody = document.getElementById('inspections-list');
+    if (!tbody) return;
+    
+    if (!inspections || inspections.length === 0) {
+        tbody.innerHTML = emptyStateRow(7, 'لا يوجد مواعيد فحص مطابقة');
+        return;
+    }
+
+    tbody.innerHTML = inspections.map((ins, idx) => {
+        let statusColor = 'var(--gray-500)';
+        if (ins.status === 'تم التأكيد') statusColor = 'var(--success)';
+        if (ins.status === 'قيد المراجعة') statusColor = 'var(--warning)';
+        if (ins.status === 'مكتمل') statusColor = 'var(--primary-600)';
+
+        return `
+        <tr>
+            <td>
+                <div style="font-weight:700;color:var(--dark-800);">${ins.customer_name || '-'}</div>
+                <div style="font-size:12px;color:var(--gray-500);">${ins.company_name || '-'}</div>
+            </td>
+            <td style="color:var(--primary-600);font-weight:600;" dir="ltr">${ins.phone || '-'}</td>
+            <td style="font-weight:700;">${ins.inspection_date || '-'}</td>
+            <td style="color:var(--gray-600);">${ins.inspection_type || '-'}</td>
+            <td>
+                <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${statusColor}20;color:${statusColor};font-size:11px;font-weight:700;">
+                    ${ins.status || 'قيد المراجعة'}
+                </span>
+            </td>
+            <td>${new Date(ins.created_at).toLocaleDateString('ar-JO')}</td>
+            <td class="no-print">
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-outline btn-sm" onclick="showInspectionDetails(window._inspectionsList.findIndex(i => i.id === '${ins.id}'))" style="font-size:11px;">تفاصيل</button>
+                    <select onchange="updateInspectionStatus('${ins.id}', this.value)" style="padding:4px; border-radius:4px; border:1px solid var(--gray-300); font-size:11px;">
+                        <option value="قيد المراجعة" ${ins.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
+                        <option value="تم التأكيد" ${ins.status === 'تم التأكيد' ? 'selected' : ''}>تأكيد</option>
+                        <option value="مكتمل" ${ins.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
+                        <option value="ملغي" ${ins.status === 'ملغي' ? 'selected' : ''}>إلغاء</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" onclick="deleteInspection('${ins.id}')" style="font-size:11px;color:red;border-color:red;">حذف</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+window.printInspections = function() {
+    if (!window._inspectionsList || window._inspectionsList.length === 0) {
+        showToast('تنبيه', 'لا يوجد مواعيد للطباعة', 'info');
+        return;
+    }
+    
+    let filtered = [...window._inspectionsList];
+    const fromDate = document.getElementById('inspections-date-from') ? document.getElementById('inspections-date-from').value : '';
+    const toDate = document.getElementById('inspections-date-to') ? document.getElementById('inspections-date-to').value : '';
+    if (fromDate) {
+        filtered = filtered.filter(o => new Date(o.created_at) >= new Date(fromDate));
+    }
+    if (toDate) {
+        const toD = new Date(toDate);
+        toD.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(o => new Date(o.created_at) <= toD);
+    }
+    
+    const sortVal = document.getElementById('inspections-sort-select') ? document.getElementById('inspections-sort-select').value : 'date-desc';
+    if (sortVal === 'date-desc') {
+        filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortVal === 'date-asc') {
+        filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    } else if (sortVal === 'name-asc') {
+        filtered.sort((a,b) => (a.customer_name||'').localeCompare(b.customer_name||'', 'ar'));
+    } else if (sortVal === 'name-desc') {
+        filtered.sort((a,b) => (b.customer_name||'').localeCompare(a.customer_name||'', 'ar'));
+    }
+
+    let html = `
+        <html dir="rtl">
+        <head>
+            <title>كشف مواعيد الفحص البيئي</title>
+            <style>
+                body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 20px; color: #333; }
+                h2 { text-align: center; color: #0F2C59; margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: right; font-size: 14px; }
+                th { background-color: #f8f9fa; color: #0F2C59; }
+                @media print {
+                    @page { margin: 1.5cm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>كشف مواعيد الفحص البيئي</h2>
+            <div style="text-align:left; font-size:12px; color:#666; margin-bottom:10px;">تاريخ الطباعة: ${new Date().toLocaleDateString('en-US')} - عدد المواعيد: ${filtered.length}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>تاريخ الطلب</th>
+                        <th>العميل</th>
+                        <th>الشركة</th>
+                        <th>الهاتف</th>
+                        <th>تاريخ الفحص (المطلوب)</th>
+                        <th>نوع الفحص</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    filtered.forEach(ins => {
+        html += `
             <tr>
-                <td>
-                    <div style="font-weight:700;color:var(--dark-800);">${ins.customer_name || '-'}</div>
-                    <div style="font-size:12px;color:var(--gray-500);">${ins.company_name || '-'}</div>
-                </td>
-                <td style="color:var(--primary-600);font-weight:600;" dir="ltr">${ins.phone || '-'}</td>
-                <td style="font-weight:700;">${ins.inspection_date || '-'}</td>
-                <td style="color:var(--gray-600);">${ins.inspection_type || '-'}</td>
-                <td>
-                    <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${statusColor}20;color:${statusColor};font-size:11px;font-weight:700;">
-                        ${ins.status || 'قيد المراجعة'}
-                    </span>
-                </td>
-                <td>${new Date(ins.created_at).toLocaleDateString('ar-JO')}</td>
-                <td>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn btn-outline btn-sm" onclick="showInspectionDetails(${idx})" style="font-size:11px;">تفاصيل</button>
-                        <select onchange="updateInspectionStatus('${ins.id}', this.value)" style="padding:4px; border-radius:4px; border:1px solid var(--gray-300); font-size:11px;">
-                            <option value="قيد المراجعة" ${ins.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
-                            <option value="تم التأكيد" ${ins.status === 'تم التأكيد' ? 'selected' : ''}>تأكيد</option>
-                            <option value="مكتمل" ${ins.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
-                            <option value="ملغي" ${ins.status === 'ملغي' ? 'selected' : ''}>إلغاء</option>
-                        </select>
-                        <button class="btn btn-outline btn-sm" onclick="deleteInspection('${ins.id}')" style="font-size:11px;color:red;border-color:red;">حذف</button>
-                    </div>
-                </td>
-            </tr>`;
-        }).join('');
+                <td>${new Date(ins.created_at).toLocaleDateString('en-US')}</td>
+                <td>${ins.customer_name || '-'}</td>
+                <td>${ins.company_name || '-'}</td>
+                <td dir="ltr" style="text-align:right;">${ins.phone || '-'}</td>
+                <td>${ins.inspection_date || '-'}</td>
+                <td>${ins.inspection_type || '-'}</td>
+                <td>${ins.status || 'قيد المراجعة'}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 250);
+}
         
         const badge = document.getElementById('nav-badge-inspections');
         const pendingCount = inspections.filter(i => i.status === 'قيد المراجعة').length;

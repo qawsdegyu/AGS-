@@ -17,7 +17,7 @@ $$ LANGUAGE plpgsql;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- دالة إضافة حساب مستخدم
-CREATE OR REPLACE FUNCTION create_registered_user(user_email text, user_password text, user_name text)
+CREATE OR REPLACE FUNCTION create_registered_user(user_email text, user_password text, user_name text, user_phone text)
 RETURNS uuid
 SECURITY DEFINER
 AS $$
@@ -45,7 +45,7 @@ BEGIN
     user_email,
     crypt(user_password, gen_salt('bf')),
     now(),
-    jsonb_build_object('full_name', user_name),
+    jsonb_build_object('full_name', user_name, 'phone', user_phone),
     now(),
     now(),
     'authenticated',
