@@ -514,10 +514,24 @@
               </table>
             </div>
 
-            <!-- New: Traffic Sources Chart -->
-            <div class="chart-card">
-              <div class="chart-card-title" style="margin-bottom:var(--space-4);">مصادر الزيارات</div>
-              <canvas id="analyticsSourceChart" height="200"></canvas>
+            <!-- New: Top Buying Customers Table -->
+            <div class="data-table-card">
+              <div class="data-table-header">
+                <div class="chart-card-title">أكثر الزبائن شراءً</div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>الزبون / الشركة</th>
+                    <th>إجمالي الشراء</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-top-customers">
+                  <tr>
+                    <td colspan="2" style="text-align:center;padding:1rem;">جاري التحميل...</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

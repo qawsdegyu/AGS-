@@ -1607,7 +1607,7 @@ async function loadDashboardAnalytics() {
         const analyticsFrom = document.getElementById('analytics-date-from') ? document.getElementById('analytics-date-from').value : '';
         const analyticsTo = document.getElementById('analytics-date-to') ? document.getElementById('analytics-date-to').value : '';
 
-        let ordersQuery = supabase.from('orders').select('items, total_amount, created_at').neq('status', 'ملغى');
+        let ordersQuery = supabase.from('orders').select('items, total_amount, created_at, customer_name, customer_company').neq('status', 'ملغى');
         if (analyticsFrom) ordersQuery = ordersQuery.gte('created_at', analyticsFrom);
         if (analyticsTo) {
             const toD = new Date(analyticsTo);
@@ -1736,21 +1736,35 @@ async function loadDashboardAnalytics() {
             if (!pvError && pageViewsData) {
                 // 1. Visitors by Date
                 const visitorsByDate = {};
-                // Pre-fill last 7 days with 0 to ensure the chart always has an x-axis
-                for(let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
+                // Pre-fill days based on selected period
+                let pStart = new Date();
+                pStart.setDate(pStart.getDate() - 6);
+                let pEnd = new Date();
+                
+                if (analyticsFrom) pStart = new Date(analyticsFrom);
+                if (analyticsTo) pEnd = new Date(analyticsTo);
+                
+                const diffDays = Math.ceil(Math.abs(pEnd - pStart) / (1000 * 60 * 60 * 24));
+                if (diffDays > 31) {
+                    pStart = new Date(pEnd);
+                    pStart.setDate(pStart.getDate() - 31);
+                }
+                
+                for (let d = new Date(pStart); d <= pEnd; d.setDate(d.getDate() + 1)) {
                     visitorsByDate[d.toLocaleDateString('en-GB')] = 0;
                 }
 
                 pageViewsData.forEach(pv => {
                     const date = new Date(pv.created_at).toLocaleDateString('en-GB');
-                    visitorsByDate[date] = (visitorsByDate[date] || 0) + 1;
+                    // Only count if within the pre-filled range (avoids showing stray dates if limit was applied)
+                    if (visitorsByDate[date] !== undefined) {
+                        visitorsByDate[date] += 1;
+                    }
                 });
                 const sortedDates = Object.keys(visitorsByDate).sort((a,b) => {
                     const [da,ma,ya] = a.split('/'); const [db,mb,yb] = b.split('/');
                     return new Date(ya,ma-1,da) - new Date(yb,mb-1,db);
-                }).slice(-14);
+                });
                 const visitorsCount = sortedDates.map(d => visitorsByDate[d]);
 
                 getOrCreateChart('analyticsVisitorsChart', {
@@ -1766,27 +1780,30 @@ async function loadDashboardAnalytics() {
                     }
                 });
 
-                // 2. Traffic Sources
-                const sources = {};
-                pageViewsData.forEach(pv => {
-                    const s = pv.source || 'Direct';
-                    sources[s] = (sources[s] || 0) + 1;
-                });
-                if (Object.keys(sources).length > 0) {
-                    const sourceLabels = Object.keys(sources).map(key => `${key} (${sources[key]} زائر)`);
-                    getOrCreateChart('analyticsSourceChart', {
-                        type: 'doughnut',
-                        data: {
-                            labels: sourceLabels,
-                            datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
+                // 2. Top Buying Customers
+                const customerSpend = {};
+                if (ordersData) {
+                    ordersData.forEach(order => {
+                        const name = order.customer_company || order.customer_name || 'عميل غير معروف';
+                        const amt = parseFloat(order.total_amount) || 0;
+                        customerSpend[name] = (customerSpend[name] || 0) + amt;
                     });
-                } else {
-                    const ctx = document.getElementById('analyticsSourceChart');
-                    if (ctx) {
-                        const parent = ctx.parentElement;
-                        parent.innerHTML = '<div class="chart-card-title" style="margin-bottom:var(--space-4);">مصادر الزيارات</div><div style="display:flex;min-height:200px;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
+                }
+                const topCustomers = Object.keys(customerSpend)
+                    .map(name => ({ name, amount: customerSpend[name] }))
+                    .sort((a,b) => b.amount - a.amount)
+                    .slice(0, 5);
+                
+                const topCustTbody = document.getElementById('analytics-top-customers');
+                if (topCustTbody) {
+                    if (topCustomers.length === 0) {
+                        topCustTbody.innerHTML = emptyStateRow(2, 'لا توجد بيانات مشترين بعد');
+                    } else {
+                        topCustTbody.innerHTML = topCustomers.map(c => `
+                            <tr>
+                                <td style="font-weight:600;">${c.name}</td>
+                                <td style="font-weight:700;color:var(--primary-700);">${c.amount.toLocaleString('en-US')} د.أ</td>
+                            </tr>`).join('');
                     }
                 }
 
