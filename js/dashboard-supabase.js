@@ -1828,9 +1828,25 @@ async function loadDashboardCustomers() {
     if (!listBody) return;
     listBody.innerHTML = skeletonRows(5);
     try {
-        const { data: customers, error } = await supabase.from('customers').select('*').order('created_at', { ascending: false });
+        const { data: orders, error } = await supabase.from('orders').select('*').order('created_at', { ascending: true });
         if (error) throw error;
-        window.allCustomers = customers || [];
+        
+        let customersMap = new Map();
+        for (let order of orders) {
+            let key = order.customer_phone || order.customer_name;
+            if(!key) continue;
+            if(!customersMap.has(key)) {
+                customersMap.set(key, {
+                    contact_person: order.customer_name,
+                    company_name: order.customer_company,
+                    phone: order.customer_phone,
+                    email: order.customer_email || order.user_email || '-',
+                    created_at: order.created_at
+                });
+            }
+        }
+        
+        window.allCustomers = Array.from(customersMap.values()).reverse();
         renderCustomers();
     } catch (err) {
         console.error('Error loading customers:', err);
@@ -2400,49 +2416,7 @@ ${i.notes || ''}`;
 };
 
 
-// ─── CUSTOMERS (Derived from Orders) ──────────────────────────────────────────
-async function loadDashboardCustomers() {
-    const tbody = document.getElementById('customers-list');
-    if (!tbody) return;
-    try {
-        const { data: orders, error } = await supabase.from('orders').select('*').order('created_at', { ascending: true });
-        if (error) throw error;
-        
-        let customersMap = new Map();
-        for (let order of orders) {
-            let key = order.customer_phone || order.customer_name;
-            if(!key) continue;
-            if(!customersMap.has(key)) {
-                customersMap.set(key, {
-                    name: order.customer_name,
-                    company: order.customer_company,
-                    phone: order.customer_phone,
-                    email: order.customer_email || order.user_email || '-',
-                    city: order.delivery_city,
-                    date: order.created_at
-                });
-            }
-        }
-        
-        let customers = Array.from(customersMap.values()).reverse();
-        if(customers.length === 0) {
-            tbody.innerHTML = emptyStateRow(5, 'لا يوجد عملاء مسجلين بعد');
-            return;
-        }
-        
-        tbody.innerHTML = customers.map(c => `
-            <tr>
-                <td style="font-weight:700;">${c.name || '-'}${c.company ? `<br><span style="font-size:11px;color:var(--gray-500);">${c.company}</span>` : ''}</td>
-                <td>${c.city || '-'}</td>
-                <td>${c.email || '-'}</td>
-                <td dir="ltr" style="text-align:right;">${c.phone || '-'}</td>
-                <td>${new Date(c.date).toLocaleDateString('en-US')}</td>
-            </tr>
-        `).join('');
-    } catch(err) {
-        console.error('Error loading customers:', err);
-    }
-}
+
 
 // ─── INVOICES & PAYMENTS ──────────────────────────────────────────────────────
 window.allInvoices = [];
