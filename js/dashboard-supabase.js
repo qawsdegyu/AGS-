@@ -1724,8 +1724,6 @@ async function loadDashboardAnalytics() {
             }
             // Fetch page_views for tracking charts
             let pvQuery = supabase.from('page_views').select('*');
-            const analyticsFrom = document.getElementById('analytics-date-from') ? document.getElementById('analytics-date-from').value : '';
-            const analyticsTo = document.getElementById('analytics-date-to') ? document.getElementById('analytics-date-to').value : '';
             if (analyticsFrom) {
                 pvQuery = pvQuery.gte('created_at', analyticsFrom);
             }
