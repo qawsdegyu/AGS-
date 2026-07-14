@@ -16,12 +16,14 @@ GRANT ALL ON TABLE public.page_views TO service_role;
 -- السماح بالوصول المجهول (Anonymous) لإضافة صفوف جديدة
 ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow anonymous inserts to page_views" ON public.page_views;
 CREATE POLICY "Allow anonymous inserts to page_views" 
 ON public.page_views FOR INSERT 
 TO anon 
 WITH CHECK (true);
 
 -- السماح بالوصول الكامل للإدارة
+DROP POLICY IF EXISTS "Allow read for all" ON public.page_views;
 CREATE POLICY "Allow read for all" 
 ON public.page_views FOR SELECT 
 TO public 

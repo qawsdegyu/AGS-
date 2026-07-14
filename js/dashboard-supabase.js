@@ -135,9 +135,10 @@ async function loadDashboardOverview() {
         let recentOrdersQuery = supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
         let recentRfqsQuery = supabase.from('rfqs').select('*').order('created_at', { ascending: false }).limit(3);
 
+        let startDate;
         if (period !== 'all') {
             const now = new Date();
-            let startDate = new Date();
+            startDate = new Date();
             if (period === 'today') {
                 startDate.setHours(0,0,0,0);
             } else if (period === 'week') {
@@ -152,20 +153,39 @@ async function loadDashboardOverview() {
             recentRfqsQuery = recentRfqsQuery.gte('created_at', startDate.toISOString());
         }
 
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        let weeklyOrdersQuery = supabase.from('orders').select('created_at, total_amount').gte('created_at', weekAgo.toISOString());
+        let weeklyRfqsQuery = supabase.from('rfqs').select('created_at').gte('created_at', weekAgo.toISOString());
+        
+        let periodOrdersQuery = supabase.from('orders').select('items, total_amount').neq('status', 'ملغى');
+        if (startDate) {
+            periodOrdersQuery = periodOrdersQuery.gte('created_at', startDate.toISOString());
+        }
+        let productsQuery = supabase.from('products').select('id, category');
+
         const [
             { data: stats },
             { data: monthlyRevData },
             { data: recentOrders },
             { data: recentRfqs },
             { data: salesByCategoryData },
-            { count: pendingOrdersCount }
+            { count: pendingOrdersCount },
+            { data: weeklyOrdersData },
+            { data: weeklyRfqsData },
+            { data: periodOrdersData },
+            { data: allProductsData }
         ] = await Promise.all([
             supabase.rpc('get_dashboard_stats', { period_filter: period }),
             supabase.rpc('get_monthly_revenue'),
             recentOrdersQuery,
             recentRfqsQuery,
             supabase.rpc('get_sales_by_category', { period_filter: period }),
-            supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['جديد', 'بانتظار التأكيد', 'قيد المراجعة'])
+            supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['جديد', 'بانتظار التأكيد', 'قيد المراجعة']),
+            weeklyOrdersQuery,
+            weeklyRfqsQuery,
+            periodOrdersQuery,
+            productsQuery
         ]);
 
         if (!stats) return;
@@ -296,21 +316,63 @@ async function loadDashboardOverview() {
                 sales: monthlySales.slice(Math.max(0, cm - 6), cm + 1),
                 rfqs: monthlyRfqs.slice(Math.max(0, cm - 6), cm + 1).map(v => v * 500)
             };
+            let weeklySales = Array(7).fill(0);
+            let weeklyRfqs = Array(7).fill(0);
+            const todayD = new Date();
+            todayD.setHours(0,0,0,0);
+            
+            if (weeklyOrdersData) {
+                weeklyOrdersData.forEach(o => {
+                    const od = new Date(o.created_at);
+                    od.setHours(0,0,0,0);
+                    const diff = Math.floor((todayD - od) / (1000*3600*24));
+                    if (diff >= 0 && diff < 7) {
+                        weeklySales[6 - diff] += parseFloat(o.total_amount) || 0;
+                    }
+                });
+            }
+            if (weeklyRfqsData) {
+                weeklyRfqsData.forEach(r => {
+                    const rd = new Date(r.created_at);
+                    rd.setHours(0,0,0,0);
+                    const diff = Math.floor((todayD - rd) / (1000*3600*24));
+                    if (diff >= 0 && diff < 7) {
+                        weeklyRfqs[6 - diff] += 1;
+                    }
+                });
+            }
+
             window._dashData.weekly = {
                 labels: Array.from({length:7}, (_, i) => { const d = new Date(); d.setDate(d.getDate()-(6-i)); return d.toLocaleDateString('ar-JO',{weekday:'short'}); }),
-                sales: Array(7).fill(0),
-                rfqs: Array(7).fill(0)
+                sales: weeklySales,
+                rfqs: weeklyRfqs.map(v => v * 100) // Scale RFQs to make them visible on the same chart
             };
 
             renderSalesChart('monthly');
 
             const catSales = {};
             let totalSalesAmount = 0;
-            if (salesByCategoryData) {
+            if (salesByCategoryData && salesByCategoryData.length > 0) {
                 salesByCategoryData.forEach(s => { 
                     if (s.category) {
                         catSales[s.category] = parseFloat(s.revenue) || 0; 
                         totalSalesAmount += catSales[s.category];
+                    }
+                });
+            } else if (periodOrdersData && allProductsData) {
+                const prodCatMap = {};
+                allProductsData.forEach(p => { prodCatMap[p.id] = p.category; });
+                
+                periodOrdersData.forEach(order => {
+                    if (Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            const pid = item.productId || item.product_id;
+                            const cat = prodCatMap[pid] || 'other';
+                            const qty = parseInt(item.quantity) || 1;
+                            const price = parseFloat(item.price) || 0;
+                            catSales[cat] = (catSales[cat] || 0) + (qty * price);
+                            totalSalesAmount += (qty * price);
+                        });
                     }
                 });
             }
@@ -1542,42 +1604,86 @@ async function logoutAdmin() {
 // ─── ANALYTICS ────────────────────────────────────────────────────────────────
 async function loadDashboardAnalytics() {
     try {
+        const analyticsFrom = document.getElementById('analytics-date-from') ? document.getElementById('analytics-date-from').value : '';
+        const analyticsTo = document.getElementById('analytics-date-to') ? document.getElementById('analytics-date-to').value : '';
+
+        let ordersQuery = supabase.from('orders').select('items, total_amount, created_at').neq('status', 'ملغى');
+        if (analyticsFrom) ordersQuery = ordersQuery.gte('created_at', analyticsFrom);
+        if (analyticsTo) {
+            const toD = new Date(analyticsTo);
+            toD.setHours(23, 59, 59, 999);
+            ordersQuery = ordersQuery.lte('created_at', toD.toISOString());
+        }
+
         const [
-            { data: topProducts, error: err1 },
-            { data: monthlyRevData, error: err2 },
-            { data: categorySales, error: err3 }
+            { data: ordersData, error: err1 },
+            { data: productsData, error: err2 }
         ] = await Promise.all([
-            supabase.rpc('get_top_products'),
-            supabase.rpc('get_monthly_revenue'),
-            supabase.rpc('get_sales_by_category')
+            ordersQuery,
+            supabase.from('products').select('id, name, category, title')
         ]);
 
-        if (err1 || err2 || err3) {
-            console.error('Error fetching analytics from RPC:', err1 || err2 || err3);
+        if (err1 || err2) {
+            console.error('Error fetching analytics data:', err1 || err2);
             return;
         }
 
-        const topProductsList = topProducts || [];
+        const prodMap = {};
+        if (productsData) {
+            productsData.forEach(p => prodMap[p.id] = p);
+        }
+
+        const productSales = {};
+        const catSalesMap = {};
+        let monthlyRev = Array(12).fill(0);
+
+        if (ordersData) {
+            ordersData.forEach(order => {
+                const mIdx = new Date(order.created_at).getMonth();
+                monthlyRev[mIdx] += parseFloat(order.total_amount) || 0;
+
+                if (Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const pid = item.productId || item.product_id;
+                        const p = prodMap[pid];
+                        if (p) {
+                            const cat = p.category || 'other';
+                            const qty = parseInt(item.quantity) || 1;
+                            const price = parseFloat(item.price) || 0;
+                            const rev = qty * price;
+                            
+                            catSalesMap[cat] = (catSalesMap[cat] || 0) + rev;
+
+                            if (!productSales[pid]) {
+                                productSales[pid] = { name: p.name || p.title, category: cat, qty: 0, revenue: 0 };
+                            }
+                            productSales[pid].qty += qty;
+                            productSales[pid].revenue += rev;
+                        }
+                    });
+                }
+            });
+        }
+
+        const topProductsList = Object.values(productSales).sort((a,b) => b.qty - a.qty).slice(0, 5);
+        const categorySales = Object.keys(catSalesMap).map(k => ({ category: k, revenue: catSalesMap[k] }));
+
         const topTbody = document.getElementById('analytics-top-products');
         if (topTbody) {
             topTbody.innerHTML = topProductsList.length === 0
                 ? emptyStateRow(4, 'لا توجد بيانات مبيعات كافية')
                 : topProductsList.map(p => `
                     <tr>
-                        <td style="font-weight:600;">${p.name}</td>
+                        <td style="font-weight:600;">${p.name || 'منتج غير معروف'}</td>
                         <td><span class="badge" style="background:#FFF3E0;color:#E65100;">${p.category}</span></td>
                         <td>${p.qty} وحدة</td>
-                        <td style="font-weight:700;color:var(--primary-700);">${p.revenue.toLocaleString('en-US')} د.أ</td>
+                        <td style="font-weight:700;color:var(--primary-700);">${(p.revenue || 0).toLocaleString('en-US')} د.أ</td>
                     </tr>`).join('');
         }
 
         if (typeof Chart !== 'undefined') {
             const monthsNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
             const cm = new Date().getMonth();
-            let monthlyRev = Array(12).fill(0);
-            if (monthlyRevData && monthlyRevData.length > 0) {
-                monthlyRevData.forEach(m => { monthlyRev[m.month_index] = parseFloat(m.revenue) || 0; });
-            }
 
             getOrCreateChart('analyticsRevenueChart', {
                 type: 'bar',
@@ -1632,6 +1738,13 @@ async function loadDashboardAnalytics() {
             if (!pvError && pageViewsData) {
                 // 1. Visitors by Date
                 const visitorsByDate = {};
+                // Pre-fill last 7 days with 0 to ensure the chart always has an x-axis
+                for(let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    visitorsByDate[d.toLocaleDateString('en-GB')] = 0;
+                }
+
                 pageViewsData.forEach(pv => {
                     const date = new Date(pv.created_at).toLocaleDateString('en-GB');
                     visitorsByDate[date] = (visitorsByDate[date] || 0) + 1;
@@ -1661,15 +1774,23 @@ async function loadDashboardAnalytics() {
                     const s = pv.source || 'Direct';
                     sources[s] = (sources[s] || 0) + 1;
                 });
-                const sourceLabels = Object.keys(sources).map(key => `${key} (${sources[key]} زائر)`);
-                getOrCreateChart('analyticsSourceChart', {
-                    type: 'doughnut',
-                    data: {
-                        labels: sourceLabels,
-                        datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
-                    },
-                    options: { responsive: true, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
-                });
+                if (Object.keys(sources).length > 0) {
+                    const sourceLabels = Object.keys(sources).map(key => `${key} (${sources[key]} زائر)`);
+                    getOrCreateChart('analyticsSourceChart', {
+                        type: 'doughnut',
+                        data: {
+                            labels: sourceLabels,
+                            datasets: [{ data: Object.values(sources), backgroundColor: ['#1565C0','#FF6B00','#F44336','#00C853','#FFD600', '#9C27B0'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { font:{family:'Cairo'}, padding: 12 } } } }
+                    });
+                } else {
+                    const ctx = document.getElementById('analyticsSourceChart');
+                    if (ctx) {
+                        const parent = ctx.parentElement;
+                        parent.innerHTML = '<div style="display:flex;height:100%;align-items:center;justify-content:center;color:#888;">لا توجد بيانات</div>';
+                    }
+                }
 
                 // 3. Top Viewed Products
                 const productViews = {};
@@ -3345,7 +3466,8 @@ function setDefaultDates() {
         'orders-date-from', 'orders-date-to',
         'rfqs-date-from', 'rfqs-date-to',
         'payments-date-from', 'payments-date-to',
-        'inspections-date-from', 'inspections-date-to'
+        'inspections-date-from', 'inspections-date-to',
+        'customers-date-from', 'customers-date-to'
     ];
     
     dateInputs.forEach(id => {

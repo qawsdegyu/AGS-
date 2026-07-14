@@ -55,14 +55,39 @@ BEGIN
       SUM(COALESCE((item->>'quantity')::int, 1) * COALESCE((item->>'price')::numeric, 0)) as total
     FROM orders,
     jsonb_array_elements(items) AS item
-    JOIN products p ON p.id = COALESCE(item->>'productId', item->>'product_id')::uuid
+    JOIN products p ON p.id = NULLIF(COALESCE(item->>'productId', item->>'product_id'), '')::uuid
     WHERE orders.status != 'ملغى' AND orders.created_at >= start_date
     GROUP BY p.category
   ) t;
 
   RETURN COALESCE(result, '[]'::jsonb);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-  RETURN COALESCE(result, '[]'::jsonb);
+-- 2.5 إحصائيات المبيعات الأسبوعية (للرسم البياني الخطي - Line Chart)
+CREATE OR REPLACE FUNCTION get_weekly_revenue()
+RETURNS JSONB AS $$
+DECLARE
+  res JSONB;
+BEGIN
+  SELECT jsonb_agg(
+    jsonb_build_object(
+      'day_date', to_char(t.created_at, 'YYYY-MM-DD'),
+      'revenue', t.total
+    )
+  ) INTO res
+  FROM (
+    SELECT 
+      date_trunc('day', created_at) as created_at,
+      SUM(total_amount) as total
+    FROM orders
+    WHERE status != 'ملغى'
+      AND created_at >= date_trunc('day', now()) - interval '6 days'
+    GROUP BY date_trunc('day', created_at)
+    ORDER BY date_trunc('day', created_at)
+  ) t;
+  
+  RETURN COALESCE(res, '[]'::jsonb);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
