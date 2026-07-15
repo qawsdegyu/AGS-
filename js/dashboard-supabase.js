@@ -1845,9 +1845,16 @@ async function loadDashboardAnalytics() {
                     if (sortedProductIds.length === 0) {
                         topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات منتجات بعد');
                     } else {
-                        const safeProductIds = sortedProductIds.map(id => isNaN(Number(id)) ? id : Number(id));
-                        const { data: productsData, error: productError } = await supabase.from('products').select('id, name').in('id', safeProductIds);
-                        if (productError) console.error("Error fetching top products:", productError);
+                        // Filter out strings like "undefined", "null" that might have been accidentally saved
+                        const validIds = sortedProductIds.filter(id => id && id !== 'undefined' && id !== 'null');
+                        const safeProductIds = validIds.map(id => isNaN(Number(id)) ? id : Number(id));
+                        
+                        let productsData = [];
+                        if (safeProductIds.length > 0) {
+                            const { data, error: productError } = await supabase.from('products').select('id, name').in('id', safeProductIds);
+                            if (productError) console.error("Error fetching top products:", JSON.stringify(productError));
+                            if (data) productsData = data;
+                        }
                         const productNames = {};
                         if (productsData) productsData.forEach(p => productNames[String(p.id)] = p.name);
                         
