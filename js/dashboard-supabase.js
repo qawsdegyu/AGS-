@@ -1851,12 +1851,12 @@ async function loadDashboardAnalytics() {
                         
                         let productsData = [];
                         if (safeProductIds.length > 0) {
-                            const { data, error: productError } = await supabase.from('products').select('id, name').in('id', safeProductIds);
+                            const { data, error: productError } = await supabase.from('products').select('id, title').in('id', safeProductIds);
                             if (productError) console.error("Error fetching top products:", JSON.stringify(productError));
                             if (data) productsData = data;
                         }
                         const productNames = {};
-                        if (productsData) productsData.forEach(p => productNames[String(p.id)] = p.name);
+                        if (productsData) productsData.forEach(p => productNames[String(p.id)] = p.title);
                         
                         topViewedTbody.innerHTML = sortedProductIds.map(pid => `
                             <tr>
