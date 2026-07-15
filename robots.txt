@@ -11,4 +11,4 @@ Disallow: /profile.html
 Disallow: /checkout.html
 
 # Sitemap location (update with your actual domain later)
-Sitemap: https://www.ags-safety.com/sitemap.xml
+Sitemap: https://www.agsco.shop/sitemap.xml

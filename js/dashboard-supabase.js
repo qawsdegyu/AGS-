@@ -1845,13 +1845,15 @@ async function loadDashboardAnalytics() {
                     if (sortedProductIds.length === 0) {
                         topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات منتجات بعد');
                     } else {
-                        const { data: productsData } = await supabase.from('products').select('id, name').in('id', sortedProductIds);
+                        const safeProductIds = sortedProductIds.map(id => isNaN(Number(id)) ? id : Number(id));
+                        const { data: productsData, error: productError } = await supabase.from('products').select('id, name').in('id', safeProductIds);
+                        if (productError) console.error("Error fetching top products:", productError);
                         const productNames = {};
-                        if (productsData) productsData.forEach(p => productNames[p.id] = p.name);
+                        if (productsData) productsData.forEach(p => productNames[String(p.id)] = p.name);
                         
                         topViewedTbody.innerHTML = sortedProductIds.map(pid => `
                             <tr>
-                                <td style="font-weight:600;">${productNames[pid] || 'منتج غير معروف'}</td>
+                                <td style="font-weight:600;">${productNames[String(pid)] || 'منتج غير معروف'}</td>
                                 <td><span class="badge" style="background:#E3F2FD;color:#1565C0;">${productViews[pid]} مشاهدة</span></td>
                             </tr>`).join('');
                     }
