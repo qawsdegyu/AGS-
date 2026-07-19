@@ -16,7 +16,7 @@ BEGIN
     'pending_rfqs_count', (SELECT COUNT(*) FROM rfqs WHERE status = 'انتظار'),
     'orders_count', (SELECT COUNT(*) FROM orders),
     'new_orders_count', (SELECT COUNT(*) FROM orders WHERE status = 'جديد'),
-    'sales_total', COALESCE((SELECT SUM(total_amount) FROM orders WHERE status != 'ملغى'), 0)
+    'sales_total', COALESCE((SELECT SUM(total_amount) FROM orders WHERE payment_status = 'مدفوع'), 0)
   ) INTO res;
   
   RETURN res;
@@ -56,7 +56,7 @@ BEGIN
     FROM orders,
     jsonb_array_elements(items) AS item
     JOIN products p ON p.id = NULLIF(COALESCE(item->>'productId', item->>'product_id'), '')::uuid
-    WHERE orders.status != 'ملغى' AND orders.created_at >= start_date
+    WHERE orders.payment_status = 'مدفوع' AND orders.created_at >= start_date
     GROUP BY p.category
   ) t;
 
@@ -81,7 +81,7 @@ BEGIN
       date_trunc('day', created_at) as created_at,
       SUM(total_amount) as total
     FROM orders
-    WHERE status != 'ملغى'
+    WHERE payment_status = 'مدفوع'
       AND created_at >= date_trunc('day', now()) - interval '6 days'
     GROUP BY date_trunc('day', created_at)
     ORDER BY date_trunc('day', created_at)
@@ -108,7 +108,7 @@ BEGIN
       MAX(created_at) as created_at,
       SUM(total_amount) as total
     FROM orders
-    WHERE status != 'ملغى'
+    WHERE payment_status = 'مدفوع'
       AND created_at >= date_trunc('month', now()) - interval '6 months'
     GROUP BY date_trunc('month', created_at)
     ORDER BY date_trunc('month', created_at)
@@ -140,7 +140,7 @@ BEGIN
       SUM(COALESCE((item->>'quantity')::int, 1) * COALESCE((item->>'price')::numeric, 0)) as revenue
     FROM orders,
     jsonb_array_elements(items) AS item
-    WHERE status != 'ملغى'
+    WHERE payment_status = 'مدفوع'
     GROUP BY COALESCE((item->>'productId'), (item->>'product_id'))::uuid
     ORDER BY qty DESC
     LIMIT 5

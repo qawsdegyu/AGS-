@@ -155,10 +155,10 @@ async function loadDashboardOverview() {
 
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
-        let weeklyOrdersQuery = supabase.from('orders').select('created_at, total_amount').gte('created_at', weekAgo.toISOString());
+        let weeklyOrdersQuery = supabase.from('orders').select('created_at, total_amount').eq('payment_status', 'مدفوع').gte('created_at', weekAgo.toISOString());
         let weeklyRfqsQuery = supabase.from('rfqs').select('created_at').gte('created_at', weekAgo.toISOString());
         
-        let periodOrdersQuery = supabase.from('orders').select('items, total_amount').neq('status', 'ملغى');
+        let periodOrdersQuery = supabase.from('orders').select('items, total_amount').eq('payment_status', 'مدفوع');
         if (startDate) {
             periodOrdersQuery = periodOrdersQuery.gte('created_at', startDate.toISOString());
         }
@@ -1259,6 +1259,7 @@ function renderOrders(orders) {
             <td class="no-print">
                 <div style="display:flex;gap:4px;align-items:center;">
                     <button class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px;" onclick="showOrderDetails('${order.id}')">تفاصيل</button>
+                    <button class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px;border-color:var(--danger);color:var(--danger);" onclick="deleteOrder('${order.id}')">حذف</button>
                 </div>
             </td>
         </tr>`;
@@ -1607,7 +1608,7 @@ async function loadDashboardAnalytics() {
         const analyticsFrom = document.getElementById('analytics-date-from') ? document.getElementById('analytics-date-from').value : '';
         const analyticsTo = document.getElementById('analytics-date-to') ? document.getElementById('analytics-date-to').value : '';
 
-        let ordersQuery = supabase.from('orders').select('items, total_amount, created_at, customer_name, customer_company').neq('status', 'ملغى');
+        let ordersQuery = supabase.from('orders').select('items, total_amount, created_at, customer_name, customer_company').eq('payment_status', 'مدفوع');
         if (analyticsFrom) ordersQuery = ordersQuery.gte('created_at', analyticsFrom);
         if (analyticsTo) {
             const toD = new Date(analyticsTo);
@@ -2265,6 +2266,19 @@ window.changePaymentStatus = async function(id, newStatus) {
     } catch(err) {
         showToast('خطأ', err.message, 'error');
         loadDashboardOrders();
+    }
+};
+
+window.deleteOrder = async function(id) {
+    if(!confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    try {
+        const { error } = await supabase.from('orders').delete().eq('id', id);
+        if (error) throw error;
+        showToast('تم بنجاح', 'تم حذف الطلب بنجاح', 'success');
+        loadDashboardOrders();
+        loadDashboardData(); 
+    } catch(err) {
+        showToast('خطأ', err.message, 'error');
     }
 };
 
