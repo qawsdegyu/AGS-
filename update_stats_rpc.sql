@@ -24,7 +24,7 @@ BEGIN
     'pending_rfqs_count', (SELECT COUNT(*) FROM rfqs WHERE status = 'انتظار' AND created_at >= start_date),
     'orders_count', (SELECT COUNT(*) FROM orders WHERE created_at >= start_date),
     'new_orders_count', (SELECT COUNT(*) FROM orders WHERE status = 'جديد' AND created_at >= start_date),
-    'sales_total', COALESCE((SELECT SUM(total_amount) FROM orders WHERE payment_status = 'مدفوع' AND created_at >= start_date), 0)
+    'sales_total', COALESCE((SELECT SUM(total_amount) FROM orders WHERE status != 'ملغي' AND created_at >= start_date), 0)
   ) INTO res;
   
   RETURN res;
