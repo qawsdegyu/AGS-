@@ -1848,7 +1848,10 @@ async function loadDashboardAnalytics() {
                     } else {
                         // Filter out strings like "undefined", "null" that might have been accidentally saved
                         const validIds = sortedProductIds.filter(id => id && id !== 'undefined' && id !== 'null');
-                        const safeProductIds = validIds.map(id => isNaN(Number(id)) ? id : Number(id));
+                        const safeProductIds = validIds.filter(id => {
+                            if (!isNaN(Number(id))) return true;
+                            return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+                        }).map(id => !isNaN(Number(id)) ? Number(id) : id);
                         
                         let productsData = [];
                         if (safeProductIds.length > 0) {
