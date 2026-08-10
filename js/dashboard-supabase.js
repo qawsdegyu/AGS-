@@ -1848,10 +1848,11 @@ async function loadDashboardAnalytics() {
                     } else {
                         // Filter out strings like "undefined", "null" that might have been accidentally saved
                         const validIds = sortedProductIds.filter(id => id && id !== 'undefined' && id !== 'null');
-                        const safeProductIds = validIds.filter(id => {
+                        const validSafeIdStrings = validIds.filter(id => {
                             if (!isNaN(Number(id))) return true;
                             return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
-                        }).map(id => !isNaN(Number(id)) ? Number(id) : id);
+                        });
+                        const safeProductIds = validSafeIdStrings.map(id => !isNaN(Number(id)) ? Number(id) : id);
                         
                         let productsData = [];
                         if (safeProductIds.length > 0) {
@@ -1862,11 +1863,15 @@ async function loadDashboardAnalytics() {
                         const productNames = {};
                         if (productsData) productsData.forEach(p => productNames[String(p.id)] = p.title || p.name || p.name_ar || 'منتج محذوف');
                         
-                        topViewedTbody.innerHTML = sortedProductIds.map(pid => `
-                            <tr>
-                                <td style="font-weight:600;">${productNames[String(pid)] || 'منتج غير معروف'}</td>
-                                <td><span class="badge" style="background:#E3F2FD;color:#1565C0;">${productViews[pid]} مشاهدة</span></td>
-                            </tr>`).join('');
+                        if (validSafeIdStrings.length === 0) {
+                            topViewedTbody.innerHTML = emptyStateRow(2, 'لا توجد مشاهدات لمنتجات صالحة');
+                        } else {
+                            topViewedTbody.innerHTML = validSafeIdStrings.map(pid => `
+                                <tr>
+                                    <td style="font-weight:600;">${productNames[String(pid)] || 'منتج محذوف'}</td>
+                                    <td><span class="badge" style="background:#E3F2FD;color:#1565C0;">${productViews[pid]} مشاهدة</span></td>
+                                </tr>`).join('');
+                        }
                     }
                 }
             }
