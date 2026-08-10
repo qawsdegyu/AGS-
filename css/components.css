@@ -1300,7 +1300,7 @@ body.drawer-is-open .nav-menu {
   position: absolute;
   top: 0; left: 50%; right: 50%;
   margin-left: -50vw; margin-right: -50vw;
-  width: 100vw; height: 100%;
+  width: 100vw; max-width: 100vw; height: 100%;
   background: #07111E;
   z-index: -1;
 }
@@ -1563,8 +1563,8 @@ body { overflow-x: hidden; }
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 998; /* just below z-modal */
     opacity: 0;
