@@ -136,7 +136,7 @@ function createProductCardHTML(product) {
 
     return `
         <div class="product-card" data-type="${product.category || 'other'}" data-brand="${(product.brand || '').toLowerCase()}">
-          <a href="product-details.html?id=${product.id || ''}#id=${product.id || ''}" style="text-decoration:none; color:inherit; display:block;">
+          <a href="product/${product.id || ''}/" style="text-decoration:none; color:inherit; display:block;">
             <div class="product-card-image">
               <div style="width:100%;height:100%;background:${product.images && product.images.length > 0 ? '#ffffff' : bgGradient};display:flex;align-items:center;justify-content:center;">
                 ${product.images && product.images.length > 0 ? `<img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:100%;object-fit:contain;">` : iconSvg}
@@ -146,7 +146,7 @@ function createProductCardHTML(product) {
           </a>
           <div class="product-card-body">
             <div class="product-card-brand">${product.brand || 'غير محدد'}</div>
-            <a href="product-details.html?id=${product.id || ''}#id=${product.id || ''}" style="text-decoration:none; color:inherit;"><h3 class="product-card-title">${product.title || 'منتج غير مسمى'}</h3></a>
+            <a href="product/${product.id || ''}/" style="text-decoration:none; color:inherit;"><h3 class="product-card-title">${product.title || 'منتج غير مسمى'}</h3></a>
             <div class="product-card-specs">${specsHtml}</div>
             <div class="product-card-footer">
               ${priceHtml}

@@ -76,7 +76,7 @@ async function generateSitemap() {
       // Use updated_at if available, else current date
       const date = (p.updated_at || p.created_at) ? (p.updated_at || p.created_at).split('T')[0] : new Date().toISOString().split('T')[0];
       xml += `  <url>
-    <loc>https://www.agsco.shop/product-details.html?id=${escapeXml(encodeURIComponent(p.id))}</loc>
+    <loc>https://www.agsco.shop/product/${escapeXml(encodeURIComponent(p.id))}/</loc>
     <lastmod>${escapeXml(date)}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
