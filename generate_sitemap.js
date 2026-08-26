@@ -1,11 +1,13 @@
 const fs = require('fs');
 
 const SUPABASE_URL = 'https://uaujwluwfksbvtwolvsp.supabase.co';
+const escapeXml = (value) => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[ch]));
+
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhdWp3bHV3ZmtzYnZ0d29sdnNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MTU0ODMsImV4cCI6MjA5OTA5MTQ4M30.FezqZzBhe4u4QKTRi-TyFBwKnC9_GwH4dS9MztW3Z30';
 
 async function generateSitemap() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,updated_at`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,created_at`, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -57,10 +59,10 @@ async function generateSitemap() {
     // Add dynamic products
     products.forEach(p => {
       // Use updated_at if available, else current date
-      const date = p.updated_at ? p.updated_at.split('T')[0] : new Date().toISOString().split('T')[0];
+      const date = (p.updated_at || p.created_at) ? (p.updated_at || p.created_at).split('T')[0] : new Date().toISOString().split('T')[0];
       xml += `  <url>
-    <loc>https://www.agsco.shop/product-details.html?id=${p.id}</loc>
-    <lastmod>${date}</lastmod>
+    <loc>https://www.agsco.shop/product-details.html?id=${escapeXml(encodeURIComponent(p.id))}</loc>
+    <lastmod>${escapeXml(date)}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>\n`;

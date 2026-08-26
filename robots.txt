@@ -10,5 +10,5 @@ Disallow: /reset-password.html
 Disallow: /profile.html
 Disallow: /checkout.html
 
-# Sitemap location (update with your actual domain later)
+# Sitemap location
 Sitemap: https://www.agsco.shop/sitemap.xml

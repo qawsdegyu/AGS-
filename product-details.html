@@ -8,7 +8,7 @@
   <meta name="description" content="تفاصيل المنتجات وأنظمة الإنذار ومعدات السلامة من شركة الدقة للسلامة العامة وشركة المنار." />
   <meta name="keywords" content="منتجات سلامة, طفايات حريق, أجهزة فحص, شركة الدقة للسلامة العامة, AGS Technology" />
   <meta name="author" content="Eng. Osama Mossa Al-Salhout" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="noindex, nofollow" />
   
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="product" />
@@ -703,10 +703,9 @@
         let productData;
 
         if (!productId) {
-          // Fallback: If no ID is provided in URL, fetch the latest product so the user sees a demo
-          const { data, error } = await window.supabaseClient.from('products').select('*').order('created_at', { ascending: false }).limit(1).single();
-          if (error || !data) throw new Error('لا توجد منتجات في قاعدة البيانات لعرضها');
-          productData = data;
+          setRobots('noindex, nofollow');
+          document.getElementById('productDetailsContainer').innerHTML = '<div style="text-align:center;padding:5rem;color:var(--gray-600);"><h2>اختر منتجاً من الكتالوج لعرض تفاصيله</h2><a class="btn btn-primary" href="products.html">العودة إلى المنتجات</a></div>';
+          return;
         } else {
           const { data, error } = await window.supabaseClient.from('products').select('*').eq('id', productId).single();
           if (error || !data) throw error || new Error('Product not found');
@@ -720,7 +719,74 @@
       }
     });
 
+    function setRobots(value) {
+      let tag = document.querySelector('meta[name="robots"]');
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.name = 'robots';
+        document.head.appendChild(tag);
+      }
+      tag.content = value;
+    }
+
+    function setMeta(attribute, value, content) {
+      let tag = document.head.querySelector(`meta[${attribute}="${value}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attribute, value);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    }
+
+    function setCanonical(url) {
+      document.querySelectorAll('link[rel="canonical"]').forEach((node, index) => { if (index > 0) node.remove(); });
+      let tag = document.querySelector('link[rel="canonical"]');
+      if (!tag) {
+        tag = document.createElement('link');
+        tag.rel = 'canonical';
+        document.head.appendChild(tag);
+      }
+      tag.href = url;
+    }
+
+    function updateProductSeo(product) {
+      const title = `${product.title} | AGS Technology`;
+      const plainDescription = String(product.description || `تفاصيل ومواصفات ${product.title} من شركة الدقة للسلامة العامة AGS.`).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+      const image = Array.isArray(product.images) && product.images.length ? product.images[0] : 'https://www.agsco.shop/logo.png?v=5';
+      const url = `${window.location.origin}/product-details.html?id=${encodeURIComponent(product.id)}`;
+      document.title = title;
+      setRobots('index, follow');
+      setCanonical(url);
+      setMeta('name', 'description', plainDescription);
+      setMeta('property', 'og:type', 'product');
+      setMeta('property', 'og:title', title);
+      setMeta('property', 'og:description', plainDescription);
+      setMeta('property', 'og:url', url);
+      setMeta('property', 'og:image', image);
+      setMeta('name', 'twitter:card', 'summary_large_image');
+      setMeta('name', 'twitter:title', title);
+      setMeta('name', 'twitter:description', plainDescription);
+      setMeta('name', 'twitter:image', image);
+
+      const productSchema = {
+        '@context': 'https://schema.org', '@type': 'Product', name: product.title,
+        description: plainDescription, image: Array.isArray(product.images) && product.images.length ? product.images : [image],
+        url, brand: product.brand ? { '@type': 'Brand', name: product.brand } : undefined,
+        sku: product.sku || String(product.id),
+        offers: product.price && !product.is_rfq ? { '@type': 'Offer', url, priceCurrency: 'JOD', price: Number(product.price), availability: Number(product.stock || 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', seller: { '@type': 'Organization', name: 'شركة الدقة للسلامة العامة - AGS Technology' } } : undefined
+      };
+      Object.keys(productSchema).forEach(key => productSchema[key] === undefined && delete productSchema[key]);
+      const schema = document.getElementById('product-jsonld') || document.createElement('script');
+      schema.id = 'product-jsonld'; schema.type = 'application/ld+json'; schema.textContent = JSON.stringify(productSchema); document.head.appendChild(schema);
+      const breadcrumb = document.getElementById('breadcrumb-jsonld') || document.createElement('script');
+      breadcrumb.id = 'breadcrumb-jsonld'; breadcrumb.type = 'application/ld+json'; breadcrumb.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'الرئيسية', item: baseUrl() }, { '@type': 'ListItem', position: 2, name: 'المنتجات', item: `${baseUrl()}products.html` }, { '@type': 'ListItem', position: 3, name: product.title, item: url }] }); document.head.appendChild(breadcrumb);
+    }
+
+    function baseUrl() { return 'https://www.agsco.shop/'; }
+
     function renderProductDetails(product) {
+      updateProductSeo(product);
       document.getElementById('bcProductTitle').textContent = product.title;
       const phTitle = document.getElementById('pageHeaderTitle');
       if(phTitle) phTitle.textContent = product.title;
