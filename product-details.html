@@ -788,6 +788,7 @@
 
     function renderProductDetails(product) {
       updateProductSeo(product);
+      window.dispatchEvent(new CustomEvent('ags_product_view', { detail: product }));
       document.getElementById('bcProductTitle').textContent = product.title;
       const phTitle = document.getElementById('pageHeaderTitle');
       if(phTitle) phTitle.textContent = product.title;

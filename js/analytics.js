@@ -1,6 +1,6 @@
 /* AGS analytics: set a real GA4 Measurement ID to activate collection. */
 (() => {
-  const measurementId = window.AGS_GA4_MEASUREMENT_ID || '';
+  const measurementId = 'G-D8VQEGN9C3';
   const validId = /^G-[A-Z0-9]+$/i.test(measurementId);
   if (!validId) return;
 
@@ -14,6 +14,10 @@
   document.head.appendChild(script);
 
   const send = (name, params = {}) => window.gtag('event', name, params);
+  window.addEventListener('ags_product_view', (event) => {
+    const product = event.detail || {};
+    send('view_item', { currency: 'JOD', items: [{ item_id: String(product.id || ''), item_name: product.title || '', item_brand: product.brand || undefined, price: Number(product.price || 0) }] });
+  });
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a');
     if (!link) return;
