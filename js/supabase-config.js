@@ -139,7 +139,7 @@ function createProductCardHTML(product) {
           <a href="product/${product.id || ''}/" style="text-decoration:none; color:inherit; display:block;">
             <div class="product-card-image">
               <div style="width:100%;height:100%;background:${product.images && product.images.length > 0 ? '#ffffff' : bgGradient};display:flex;align-items:center;justify-content:center;">
-                ${product.images && product.images.length > 0 ? `<img src="${product.images[0]}" alt="${product.title}" style="width:100%;height:100%;object-fit:contain;">` : iconSvg}
+                ${product.images && product.images.length > 0 ? `<img src="${product.images[0]}" alt="${product.title}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">` : iconSvg}
               </div>
               <div class="product-card-badges">${badgesHtml}</div>
             </div>
